@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- <output type="CSV" name="labels.csv" rate="60"> -->
+<output type="SOCKET" name="localhost" port="5550" rate="60">
+  <!-- <property>time</property> -->
+
+  <property> position/lat-gc-deg </property>
+  <property> position/long-gc-deg </property>
+  <property> position/h-agl-ft </property>
+
+  <property> attitude/roll-deg </property>
+  <property> attitude/pitch-deg </property>
+  <property> attitude/yaw-deg </property>
+  
+  <property> velocities/p-deg_sec </property>
+  <property> velocities/q-deg_sec </property>
+  <property> velocities/r-deg_sec </property>
+  <property> velocities/u-fps </property>
+  <property> velocities/v-fps </property>
+  <property> velocities/w-fps </property>
+
+  <property> accelerations/udot-ft_sec2 </property>
+  <property> accelerations/vdot-ft_sec2 </property>
+  <property> accelerations/wdot-ft_sec2 </property>
+
+
+  <!-- <simulation> ON </simulation>
+  <atmosphere> ON </atmosphere>
+  <massprops> ON</massprops>
+  <rates> ON </rates>
+  <velocities> ON </velocities>
+  <forces> ON </forces>
+  <moments> ON </moments>
+  <position> ON </position>
+  <propulsion> ON </propulsion>
+  <aerosurfaces> ON </aerosurfaces>
+  <fcs> ON </fcs>
+  <ground_reactions> ON </ground_reactions>
+  <coefficients> ON </coefficients> -->
+</output>

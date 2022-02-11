@@ -1,0 +1,237 @@
+<?xml-stylesheet type="text/xsl" href="http://jsbsim.sourceforge.net/JSBSim.xsl"?>
+<fdm_config name="sabre light" version="2.0" release="BETA"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://jsbsim.sourceforge.net/JSBSim.xsd">
+
+    <fileheader>
+        <author> Jakub Výmola </author>
+        <filecreationdate> 2022-01-15 </filecreationdate>
+        <version> $id:sabre_light.xml v 0.01 2022/01/15 15:32:49 jentron Exp $ </version>
+        <description> Sabre light </description>
+    </fileheader>
+
+    <metrics>
+        <wingarea unit="FT2"> 0.021 </wingarea>
+        <wingspan unit="M"> 0 </wingspan>
+        <chord unit="M"> 0.0 </chord>
+        <htailarea unit="M2"> 0.0021 </htailarea>
+        <htailarm unit="M"> 0.04 </htailarm>
+        <vtailarea unit="M2"> 0.0021 </vtailarea>
+        <vtailarm unit="M"> 0.04 </vtailarm>
+        <location name="AERORP" unit="M">
+            <x> 0 </x>
+            <y> 0 </y>
+            <z> 0 </z>
+        </location>
+        <location name="EYEPOINT" unit="M">
+            <x> 0 </x>
+            <y> 0 </y>
+            <z> 0 </z>
+        </location>
+        <location name="VRP" unit="IN">
+            <x> 0 </x>
+            <y> 0 </y>
+            <z> 0 </z>
+        </location>
+    </metrics>
+
+    <mass_balance>
+        <ixx unit="SLUG*FT2"> 2 </ixx>
+        <iyy unit="SLUG*FT2"> 2 </iyy>
+        <izz unit="SLUG*FT2"> 2 </izz>
+        <ixy unit="SLUG*FT2"> -0 </ixy>
+        <ixz unit="SLUG*FT2"> -0 </ixz>
+        <iyz unit="SLUG*FT2"> -0 </iyz>
+
+        <emptywt unit="KG"> 0.3 </emptywt>
+        <location name="CG" unit="M">
+            <x> 0.265 </x>
+            <y> 0 </y>
+            <z> 0 </z>
+        </location>
+    </mass_balance>
+
+    <ground_reactions>
+        <contact type="STRUCTURAL" name="BOTTOM_1">
+            <location unit="M">
+                <x> 0.57 </x>
+                <y> 0.1 </y>
+                <z> 0.1 </z>
+            </location>
+            <static_friction> 0.2 </static_friction>
+            <dynamic_friction> 0.2 </dynamic_friction>
+            <rolling_friction> 0.2 </rolling_friction>
+            <spring_coeff unit="LBS/FT"> 4 </spring_coeff>
+            <damping_coeff unit="LBS/FT/SEC"> 0.2 </damping_coeff>
+        </contact>
+
+        <contact type="STRUCTURAL" name="BOTTOM_2">
+            <location unit="M">
+                <x> 0.57 </x>
+                <y> -0.1 </y>
+                <z> 0.1 </z>
+            </location>
+            <static_friction> 0.2 </static_friction>
+            <dynamic_friction> 0.2 </dynamic_friction>
+            <rolling_friction> 0.2 </rolling_friction>
+            <spring_coeff unit="LBS/FT"> 4 </spring_coeff>
+            <damping_coeff unit="LBS/FT/SEC"> 0.2 </damping_coeff>
+        </contact>
+
+        <contact type="STRUCTURAL" name="BOTTOM_3">
+            <location unit="M">
+                <x> 0.57 </x>
+                <y> 0.1 </y>
+                <z> -0.1 </z>
+            </location>
+            <static_friction> 0.2 </static_friction>
+            <dynamic_friction> 0.2 </dynamic_friction>
+            <rolling_friction> 0.2 </rolling_friction>
+            <spring_coeff unit="LBS/FT"> 4 </spring_coeff>
+            <damping_coeff unit="LBS/FT/SEC"> 0.2 </damping_coeff>
+        </contact>
+
+        <contact type="STRUCTURAL" name="BOTTOM_4">
+            <location unit="M">
+                <x> 0.57 </x>
+                <y> -0.1 </y>
+                <z> -0.1 </z>
+            </location>
+            <static_friction> 0.2 </static_friction>
+            <dynamic_friction> 0.2 </dynamic_friction>
+            <rolling_friction> 0.2 </rolling_friction>
+            <spring_coeff unit="LBS/FT"> 4 </spring_coeff>
+            <damping_coeff unit="LBS/FT/SEC"> 0.2 </damping_coeff>
+        </contact>
+
+        <contact type="STRUCTURAL" name="TOP">
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+            <static_friction> 0.2 </static_friction>
+            <dynamic_friction> 0.2 </dynamic_friction>
+            <rolling_friction> 0.2 </rolling_friction>
+            <spring_coeff unit="LBS/FT"> 20 </spring_coeff>
+            <damping_coeff unit="LBS/FT/SEC"> 0.2 </damping_coeff>
+        </contact>
+    </ground_reactions>
+
+    <propulsion>
+        <engine file="Estes_E9_mine">
+            <feed>0</feed>
+            <location unit="M">
+                <x> 0.50 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+            <thruster file="Estes_E9_nozzle">
+                <location unit="M">
+                    <x> 0.57 </x>
+                    <y> 0.0 </y>
+                    <z> 0.0 </z>
+                </location>
+                <orient unit="DEG">
+                    <x> 0.0 </x>
+                    <y> 0.0 </y>
+                    <z> 0.0 </z>
+                </orient>
+            </thruster>
+        </engine>
+
+        <tank type="FUEL">
+            <!-- Tank number 0  Left SRB prop -->
+            <location unit="IN">
+                <x> 0.50 </x>
+                <y> -0 </y>
+                <z>  0 </z>
+            </location>
+            <radius unit="FT">6.0</radius>
+            <grain_config type="CYLINDRICAL">
+                <length unit="FT"> 124.0 </length>
+                <bore_diameter unit="FT"> 2.0 </bore_diameter>
+            </grain_config>
+            <capacity unit="KG"> 0.013 </capacity>
+            <contents unit="KG"> 0.013 </contents>
+        </tank>
+    </propulsion>
+
+
+    <!-- ! Functions for data visualization -->
+    <flight_control name="FGFCS">
+        <function name="attitude/roll-deg">
+            <description>Roll_rad_to_deg</description>
+            <product>
+                <property> attitude/roll-rad </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+
+        <function name="attitude/pitch-deg">
+            <description>Pitch_rad_to_deg</description>
+            <product>
+                <property> attitude/pitch-rad </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+
+        <function name="attitude/yaw-deg">
+            <description>Yaw_rad_to_deg</description>
+            <product>
+                <property> attitude/psi-rad </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+    
+        <!-- ? Angular velocities conversion -->
+        <function name="velocities/p-deg_sec">
+            <description>Roll_rate_rad_to_deg</description>
+            <product>
+                <property> velocities/p-rad_sec </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+
+        <function name="velocities/q-deg_sec">
+            <description>Pitch_rate_rad_to_deg</description>
+            <product>
+                <property> velocities/q-rad_sec </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+
+        <function name="velocities/r-deg_sec">
+            <description>Yaw_rate_rag_to_deg</description>
+            <product>
+                <property> velocities/r-rad_sec </property>
+                <value> 57.29578 </value>
+            </product>
+        </function>
+        <!-- ? END Angular velocities conversion -->
+    </flight_control>
+
+    <!-- TODO Aerodynamics -->
+    <aerodynamics>
+        <!-- <axis name="DRAG">
+            <function name="aero/force/drag">
+                <description>Drag_minimum</description>
+                <product>
+                    <property>aero/qbar-psf</property>
+                    <property>metrics/Sw-sqft</property>
+                    <value>0.75</value>
+                </product>
+            </function>
+        </axis> -->
+
+        <axis name="YAW">
+            <function name="aero/coefficient/Crc">
+                <description>Constant_roll_force</description>
+                <!-- <property>aero/qbar-psf</property> -->
+                <value>-0.2</value>
+                
+            </function>
+        </axis>
+    </aerodynamics>
+
+</fdm_config>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<initialize name="rocket_init">
+    <ubody unit="M/SEC"> 0.0 </ubody>
+    <latitude unit="DEG"> 0.0 </latitude>
+    <longitude unit="DEG"> -1.0 </longitude>
+    <phi unit="DEG"> 9.0 </phi>
+    <!-- 90 deg up -->
+    <theta unit="DEG"> 89.99 </theta>
+    <!-- 0 deg North -->
+    <psi unit="DEG"> 0 </psi>
+    <altitude unit="M"> 0.3 </altitude>
+
+</initialize>

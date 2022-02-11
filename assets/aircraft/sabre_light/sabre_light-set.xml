@@ -1,0 +1,7 @@
+<PropertyList>
+    <sim>
+        <model>
+            <path>sabre_light.ac</path>
+        </model>
+    </sim>
+</PropertyList>

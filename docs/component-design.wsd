@@ -1,0 +1,21 @@
+@startuml
+
+interface "JSBSim interface" as JSBi
+
+JSBi - [JSBSim]
+
+package "JFP" {
+    [Control system interface]
+    [FDM interfrace]
+    [Visualization]
+}
+
+package "JCS" {
+    [XML parser]
+    [HAL]
+    [Control system objects]
+}
+
+[Control system interface] --> JSBi
+
+@enduml

@@ -1,5 +1,6 @@
 # add_subdirectory(control)
 add_subdirectory(network)
+add_subdirectory(utils)
 # add_subdirectory(sim)
 # add_subdirectory(viz)
 
@@ -15,6 +16,7 @@ list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/jsbsim/src")
 add_executable(JFP
     JFP.cpp
     $<TARGET_OBJECTS:Network>
+    $<TARGET_OBJECTS:Utils>
 )
 
 target_link_libraries(JFP PUBLIC ${EXTRA_LIBS})

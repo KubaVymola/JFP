@@ -1,11 +1,10 @@
 @startuml
 
 interface "JSBSim interface" as JSBi
-
-JSBi - [JSBSim]
+interface "JCS interface" as JCSi
 
 package "JFP" {
-    [Control system interface]
+    [FCS interface]
     [FDM interfrace]
     [Visualization]
 }
@@ -14,8 +13,13 @@ package "JCS" {
     [XML parser]
     [HAL]
     [Control system objects]
+    [Data interface]
 }
 
-[Control system interface] --> JSBi
+JSBi - [JSBSim]
+[FDM interfrace] --> JSBi
+
+JCSi - [Data interface]
+[FCS interface] --> JCSi
 
 @enduml

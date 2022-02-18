@@ -48,6 +48,20 @@ void sim_nsleep(long nanosec) {
 
 
 
+void parseCLIParams(int argc, char ** argv) {
+    InputParser parser(argc, argv);
+
+    const std::string myOption = parser.getCmdOption("-f");
+    parser.cmdOptionExists("-h");
+    const std::vector<int> positionalArguments = parser.getRemainingPositionalArguments();
+
+    std::cout << "Positional args:" << std::endl;
+    for (int i : positionalArguments) {
+        std::cout << i << ": " << argv[i] << std::endl;
+    }
+}
+
+
 /**
  * Functions:
  *  1. Parses CLI arguments
@@ -60,16 +74,8 @@ void sim_nsleep(long nanosec) {
 int main(int argc, char **argv) {
     std::cout << "Jakub's Flight Package, version 0.0.1" << std::endl; 
     
-    InputParser parser(argc, argv);
+    parseCLIParams(argc, argv);
 
-    const std::string myOption = parser.getCmdOption("-f");
-    parser.cmdOptionExists("-h");
-    const std::vector<int> positionalArguments = parser.getRemainingPositionalArguments();
-
-    std::cout << "Positional args:" << std::endl;
-    for (int i : positionalArguments) {
-        std::cout << i << ": " << argv[i] << std::endl;
-    }
 
     return 0;
     

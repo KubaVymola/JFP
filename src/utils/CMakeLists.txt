@@ -1,9 +1,15 @@
-set(SOURCES
-    InputParser.cpp
-)
+# set(SOURCES
+#     InputParser.cpp
+# )
 
-set(HEADERS
-    InputParser.h
-)
+# set(HEADERS
+#     InputParser.h
+# )
 
-add_library(Utils OBJECT ${HEADERS} ${SOURCES})
+# add_library(Utils OBJECT ${HEADERS} ${SOURCES})
+
+target_sources(JFP
+    PRIVATE
+        InputParser.cpp
+        InputParser.h
+)

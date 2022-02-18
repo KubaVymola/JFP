@@ -1,4 +1,4 @@
-#include "SocketOutput.hpp"
+#include "SocketOutput.h"
 
 #include <iostream>
 #include <string.h>

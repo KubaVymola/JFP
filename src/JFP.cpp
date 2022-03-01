@@ -5,6 +5,7 @@
 #include <string.h>
 #include <algorithm>
 #include <iostream>
+#include <thread>
 
 #include "initialization/FGTrim.h"
 #include "network/SocketOutputFG.h"
@@ -12,6 +13,7 @@
 #include "sim/FDMData.h"
 #include "sim/IFDM.h"
 #include "sim/JSBSimInterface.h"
+#include "3d-viz/Rocket3DWindow.h"
 
 // TODO make port CLI option
 int PORT = 5550;
@@ -64,6 +66,9 @@ int main(int argc, char **argv) {
     std::cout << "Running JSBSim instance with input script " << jsbSimScriptFileName << std::endl;
 
     IFDM * fdmInterface = new JSBSimInterface(jsbSimScriptFileName);
+
+    Rocket3DWindow vizWindow;
+    vizWindow.OpenWindow(800, 600);
 
     fdmInterface->Init();
     socketOutputFG->SendHeaders();

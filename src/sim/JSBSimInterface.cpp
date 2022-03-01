@@ -107,7 +107,8 @@ void JSBSimInterface::Init() {
 }
 
 bool JSBSimInterface::CanIterate() {
-    return result && FDMExec->GetSimTime() <= end_time;
+    // return result && FDMExec->GetSimTime() <= end_time;
+    return true;
 }
 
 bool JSBSimInterface::HasNewData() {

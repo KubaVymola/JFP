@@ -19,15 +19,6 @@
             <set name="fcs/throttle-cmd-norm[0]" value="1.0" />
         </event>
 
-        <!-- <event name="Timed release">
-            <description>Ignition</description>
-            <notify/>
-            <condition>
-                simulation/sim-time-sec ge 3.25
-            </condition>
-            <set name="forces/hold-down" value="0"/>
-        </event> -->
-
         <event name="Release">
             <condition>forces/fbx-prop-lbs gt inertia/weight-lbs</condition>
             <set name="forces/hold-down" value="0"/>

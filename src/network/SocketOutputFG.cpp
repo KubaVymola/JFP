@@ -13,6 +13,8 @@ SocketOutputFG::~SocketOutputFG() {
 }
 
 void SocketOutputFG::SendHeaders() const {
+    if (!socket->CanSend()) return;
+    
     socket->Clear();
     socket->Clear("<LABELS>");
 
@@ -34,6 +36,8 @@ void SocketOutputFG::SendHeaders() const {
 }
 
 void SocketOutputFG::SendData(FDMData& fdmData) const {
+    if (!socket->CanSend()) return;
+    
     socket->Clear();
 
     socket->Append(fdmData.time);

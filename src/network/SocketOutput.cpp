@@ -12,9 +12,9 @@ SocketOutput::SocketOutput(const int port, const int precision) {
     this->port = port;
     this->precision = precision;
     
-    socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    socketFd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (socket_fd < 0) return;
+    if (socketFd < 0) return;
 
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
@@ -25,17 +25,23 @@ SocketOutput::SocketOutput(const int port, const int precision) {
     if (!inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)) return;
 
     // Connect to the server
-    if (connect(socket_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) return;
+    if (connect(socketFd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) return;
 
     std::cout << "Socket connected!" << std::endl;
+
+    socketConnected = true;
 }
 
 SocketOutput::~SocketOutput() {
     this->Close();
 }
 
+bool SocketOutput::CanSend(void) const {
+    return socketConnected;
+}
+
 void SocketOutput::Close(void) {
-    close(socket_fd);
+    close(socketFd);
 }
 
 void SocketOutput::Clear(void) {
@@ -67,9 +73,9 @@ void SocketOutput::Send(void) {
     std::string toSend = buffer.str();
 
     // if ()
-    send(socket_fd, toSend.c_str(), toSend.size(), 0);
+    send(socketFd, toSend.c_str(), toSend.size(), 0);
 }
 
 void SocketOutput::Send(const char * data, int length) {
-    send(socket_fd, data, length, 0);
+    send(socketFd, data, length, 0);
 }

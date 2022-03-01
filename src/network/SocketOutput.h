@@ -8,6 +8,7 @@ class SocketOutput {
 public:
     SocketOutput(const int port, const int precision = 6);
     ~SocketOutput();
+    bool CanSend(void) const;
     void Close(void);
     void Clear(void);
     void Clear(const std::string& s);
@@ -17,9 +18,11 @@ public:
     void Send(void);
     void Send(const char * data, int length);
 private:
+    bool socketConnected = false;
+
     int precision;
     int port;
-    int socket_fd;
+    int socketFd;
     std::ostringstream buffer;
 };
 

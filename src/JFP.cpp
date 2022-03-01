@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     IFDM * fdmInterface = new JSBSimInterface(jsbSimScriptFileName);
 
     Rocket3DWindow vizWindow;
-    vizWindow.OpenWindow(800, 600);
+    std::thread t(&Rocket3DWindow::OpenWindow, &vizWindow, 800.0f, 600.0f);
 
     fdmInterface->Init();
     socketOutputFG->SendHeaders();
@@ -82,6 +82,8 @@ int main(int argc, char **argv) {
             socketOutputFG->SendData(fdmData);
         }
     }
+
+    t.join();
 
     return 0;
 }

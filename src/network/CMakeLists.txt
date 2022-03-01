@@ -6,8 +6,10 @@
 
 target_sources(JFP
     PRIVATE
-        SocketOutput.cpp
         SocketOutput.h
+        SocketOutput.cpp
+        SocketOutputFG.h
+        SocketOutputFG.cpp
 )
 
 # target_include_directories(myLib PUBLIC ${CMAKE_CURRENT_LIST_DIR})

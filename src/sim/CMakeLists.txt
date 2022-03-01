@@ -14,4 +14,5 @@ target_sources(JFP
         IFDM.h
         JSBSimInterface.cpp
         JSBSimInterface.h
+        FDMData.h
 )

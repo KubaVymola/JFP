@@ -6,24 +6,40 @@
 #include <algorithm>
 #include <iostream>
 
-#include "FGFDMExec.h"
 #include "initialization/FGTrim.h"
-#include "network/SocketOutput.h"
+#include "network/SocketOutputFG.h"
 #include "utils/InputParser.h"
+#include "sim/FDMData.h"
+#include "sim/IFDM.h"
+#include "sim/JSBSimInterface.h"
 
 // TODO make port CLI option
-const int PORT = 5550;
+int PORT = 5550;
+std::string jsbSimScriptFileName;
+FDMData fdmData;
+SocketOutputFG * socketOutputFG;
 
 void parseCLIParams(int argc, char ** argv) {
     InputParser parser(argc, argv);
 
-    const std::string myOption = parser.getCmdOption("-f");
-    parser.cmdOptionExists("-h");
+    // ? Key-value arguments
+    const std::string cliPort = parser.getCmdOption("-p");
+    if (!cliPort.empty()) PORT = atoi(cliPort.c_str());
+
+    std::cout << PORT << std::endl;
+
+    // ? Remaining positional arguments
     const std::vector<int> positionalArguments = parser.getRemainingPositionalArguments();
 
-    std::cout << "Positional args:" << std::endl;
+    int posArgId = 1;
     for (int i : positionalArguments) {
-        std::cout << i << ": " << argv[i] << std::endl;
+        switch (posArgId) {
+            case 1:
+                jsbSimScriptFileName = argv[i];
+                break;
+        }
+
+        posArgId++;
     }
 }
 
@@ -42,11 +58,25 @@ int main(int argc, char **argv) {
     
     parseCLIParams(argc, argv);
 
+    if (jsbSimScriptFileName.empty()) return 1;
+    socketOutputFG = new SocketOutputFG(PORT);
+    
+    std::cout << "Running JSBSim instance with input script " << jsbSimScriptFileName << std::endl;
 
-    SocketOutput socket_output;
-    socket_output.create_socket(PORT);
-    socket_output.send_headers();
-    std::cout << "Done!" << std::endl;
+    IFDM * fdmInterface = new JSBSimInterface(jsbSimScriptFileName);
+
+    fdmInterface->Init();
+    socketOutputFG->SendHeaders();
+    socketOutputFG->SendData(fdmData);
+
+    while (fdmInterface->CanIterate()) {
+        fdmInterface->Iterate();
+
+        if (fdmInterface->HasNewData()) {
+            fdmInterface->UpdateData(fdmData);
+            socketOutputFG->SendData(fdmData);
+        }
+    }
 
     return 0;
 }

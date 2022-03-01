@@ -3,18 +3,24 @@
 
 #include "IFDM.h"
 #include "FGFDMExec.h"
+#include "FDMData.h"
 #include <string>
 
-class JSBSimInterface : IFDM {
+class JSBSimInterface : public IFDM {
 public:
     JSBSimInterface(const std::string& inputFileName);
     ~JSBSimInterface();
     void Init();
+    bool CanIterate();
+    bool HasNewData();
     void Iterate();
+    void UpdateData(FDMData& data);
 private:
     JSBSim::FGFDMExec *FDMExec;
 
     std::string inputFileName;
+
+    bool hasNewData;
 
     bool result;
     bool realtime;

@@ -1,16 +1,20 @@
 #include "SocketOutput.h"
 
 #include <iostream>
-#include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <unistd.h>
+#include <iomanip>
 
 
-int SocketOutput::create_socket(const int port) {
+SocketOutput::SocketOutput(const int port, const int precision) {
+    this->port = port;
+    this->precision = precision;
+    
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (socket_fd < 0) return 0;
+    if (socket_fd < 0) return;
 
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
@@ -18,23 +22,54 @@ int SocketOutput::create_socket(const int port) {
 
     // TODO make address a CLI option
     // Convert address to binary form
-    if (!inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)) return 0;
+    if (!inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)) return;
 
     // Connect to the server
-    if (connect(socket_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) return 0;
+    if (connect(socket_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) return;
 
     std::cout << "Socket connected!" << std::endl;
-
-    return socket_fd;
 }
 
-void SocketOutput::send_headers() {
-    const char data[] = "Test data\n";
-
-    int n = send(socket_fd, data, strlen(data), 0);
-    if (n < 0) std::cout << "ERROR writing to socket" << std::endl;
-
-    std::cout << "Done sending headers" << std::endl;
+SocketOutput::~SocketOutput() {
+    this->Close();
 }
 
-void SocketOutput::send_data() { }
+void SocketOutput::Close(void) {
+    close(socket_fd);
+}
+
+void SocketOutput::Clear(void) {
+    buffer.str(std::string());
+}
+
+void SocketOutput::Clear(const std::string& s) {
+    this->Clear();
+    buffer << s << ' ';
+}
+
+void SocketOutput::Append(const double data) {
+    if (buffer.tellp() > 0) buffer << ',';
+    buffer << std::setw(12) << std::setprecision(precision) << data; 
+}
+
+void SocketOutput::Append(const long data) {
+    if (buffer.tellp() > 0) buffer << ',';
+    buffer << std::setw(12) << data;
+}
+
+void SocketOutput::Append(const char * data) {
+    if (buffer.tellp() > 0) buffer << ',';
+    buffer << data;
+}
+
+void SocketOutput::Send(void) {
+    buffer << '\n';
+    std::string toSend = buffer.str();
+
+    // if ()
+    send(socket_fd, toSend.c_str(), toSend.size(), 0);
+}
+
+void SocketOutput::Send(const char * data, int length) {
+    send(socket_fd, data, length, 0);
+}

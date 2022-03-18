@@ -1,18 +1,14 @@
-# set(SOURCES
-#     JSBSimInterface.cpp
-# )
-
-# set(HEADERS
-#     IFDM.h
-#     JSBSimInterface.h
-# )
-
-# add_library(Sim OBJECT ${HEADERS} ${SOURCES})
-
 target_sources(JFP
     PRIVATE
+        Craft.cpp
+        Craft.h
+        CraftConfig.h
+        FDMData.cpp
+        FDMData.h
         IFDM.h
         JSBSimInterface.cpp
         JSBSimInterface.h
-        FDMData.h
+        SimConfig.h
+        SimConfigParser.cpp
+        SimConfigParser.h
 )

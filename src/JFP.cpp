@@ -13,22 +13,21 @@
 #include "sim/FDMData.h"
 #include "sim/IFDM.h"
 #include "sim/JSBSimInterface.h"
-#include "3d-viz/Rocket3DWindow.h"
+#include "sim/SimConfigParser.h"
+#include "3d-viz/ICameraProvider.h"
+#include "3d-viz/Visualizer3D.h"
+#include "sim/Craft.h"
 
 // TODO make port CLI option
-int PORT = 5550;
-std::string jsbSimScriptFileName;
-FDMData fdmData;
-SocketOutputFG * socketOutputFG;
+// int PORT = 5550;
+// std::string JFPScriptFilename;
 
-void parseCLIParams(int argc, char ** argv) {
+void parseCLIParams(int argc, char ** argv, SimConfig& simConfig) {
     InputParser parser(argc, argv);
 
     // ? Key-value arguments
-    const std::string cliPort = parser.getCmdOption("-p");
-    if (!cliPort.empty()) PORT = atoi(cliPort.c_str());
-
-    std::cout << PORT << std::endl;
+    // const std::string cliPort = parser.getCmdOption("-p");
+    // if (!cliPort.empty()) simConfig.FDMSocketPort = atoi(cliPort.c_str());
 
     // ? Remaining positional arguments
     const std::vector<int> positionalArguments = parser.getRemainingPositionalArguments();
@@ -37,7 +36,7 @@ void parseCLIParams(int argc, char ** argv) {
     for (int i : positionalArguments) {
         switch (posArgId) {
             case 1:
-                jsbSimScriptFileName = argv[i];
+                simConfig.JFPMainXML = argv[i];
                 break;
         }
 
@@ -45,6 +44,30 @@ void parseCLIParams(int argc, char ** argv) {
     }
 }
 
+// void instantiateFDM(IFDM*& fdmInterface, SimConfig simConfig) {
+//     if (simConfig.FDMType == "JSBSim") {
+//         fdmInterface = new JSBSimInterface(simConfig.FDMInputFile);
+//     }
+// }
+
+void JFPInit(const SimConfig& simConfig, std::vector<Craft *>& JFPcrafts, Visualizer3D& vizWindow) {
+    for (auto craftConfig : simConfig.crafts) {
+        // TODO informative exit exception (global)
+        if (craftConfig.FDMScriptFile.empty()) continue;
+
+        Craft * newCraft = new Craft();        
+        newCraft->Init(craftConfig);
+
+        vizWindow.RegisterRenderable(newCraft);
+        vizWindow.RegisterCameraProvider((ICameraProvider *)newCraft);
+
+        JFPcrafts.push_back(newCraft);
+    }
+}
+
+void JFPLoop() {
+
+}
 
 /**
  * Functions:
@@ -56,34 +79,50 @@ void parseCLIParams(int argc, char ** argv) {
  * Usage: ./JFP <xml_input> [...override params]
  */
 int main(int argc, char **argv) {
+    SimConfig simConfig;
+    std::vector<Craft *> crafts;
+    
     std::cout << "Jakub's Flight Package, version 0.0.1" << std::endl; 
     
-    parseCLIParams(argc, argv);
+    // First run to get JFP main XML file
+    parseCLIParams(argc, argv, simConfig);
 
-    if (jsbSimScriptFileName.empty()) return 1;
-    socketOutputFG = new SocketOutputFG(PORT);
-    
-    std::cout << "Running JSBSim instance with input script " << jsbSimScriptFileName << std::endl;
+    std::cout << 1 << std::endl;
 
-    IFDM * fdmInterface = new JSBSimInterface(jsbSimScriptFileName);
+    SimConfigParser configParser;
+    configParser.ParseMainXML(simConfig.JFPMainXML, simConfig);
 
-    Rocket3DWindow vizWindow;
-    std::thread t(&Rocket3DWindow::OpenWindow, &vizWindow, 800.0f, 600.0f);
+    std::cout << 2 << std::endl;
 
-    fdmInterface->Init();
-    socketOutputFG->SendHeaders();
-    socketOutputFG->SendData(fdmData);
+    // Second run to override config which is also provided via CLI
+    parseCLIParams(argc, argv, simConfig);
 
-    while (fdmInterface->CanIterate()) {
-        fdmInterface->Iterate();
+    std::cout << 3 << std::endl;
 
-        if (fdmInterface->HasNewData()) {
-            fdmInterface->UpdateData(fdmData);
-            socketOutputFG->SendData(fdmData);
+    Visualizer3D vizWindow;
+
+    JFPInit(simConfig, crafts, vizWindow);
+
+    std::cout << 4 << std::endl;
+
+    bool keepRunning = true;
+    while (keepRunning) {
+        keepRunning = false;
+        
+        // Update all crafts (at least one has to still be running)
+        for (auto craft : crafts) {
+            if (!craft->CanIterate()) continue;
+            
+            keepRunning = true;
+            craft->Iterate();
+        }
+
+        if (!vizWindow.ShouldClose()) {
+            vizWindow.Iterate();
+        } else {
+            vizWindow.Close();
         }
     }
-
-    t.join();
 
     return 0;
 }

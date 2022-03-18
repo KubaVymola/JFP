@@ -1,7 +1,15 @@
 list(APPEND EXTRA_LIBS libJSBSim)
 list(APPEND EXTRA_LIBS glfw)
+list(APPEND EXTRA_LIBS glm)
+list(APPEND EXTRA_LIBS assimp)
+list(APPEND EXTRA_LIBS tinyxml2)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/src")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/tinyxml2")
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/jsbsim/src")
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/glad/include/")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/glad/include")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/glm/glm")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/lib/assimp/include")
+list(APPEND EXTRA_INCLUDES "${PROJECT_BINARY_DIR}/generated")
 list(APPEND EXTRA_SOURCES "${PROJECT_SOURCE_DIR}/lib/glad/src/glad.c")
 
 add_executable(JFP JFP.cpp)
@@ -10,6 +18,14 @@ add_executable(JFP JFP.cpp)
 target_link_libraries(JFP PUBLIC ${EXTRA_LIBS})
 target_include_directories(JFP PUBLIC "${PROJECT_BINARY_DIR}" ${EXTRA_INCLUDES})
 target_sources(JFP PRIVATE ${EXTRA_SOURCES})
+
+# Shaders
+add_custom_command(
+    TARGET ${PROJECT_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/shaders
+            ${CMAKE_BINARY_DIR}/shaders
+)
 
 add_subdirectory(network)
 add_subdirectory(utils)

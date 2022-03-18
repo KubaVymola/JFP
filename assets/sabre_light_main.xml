@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<main>
+    <!-- At least either FDM, or data_source is needed -->
+
+    <!-- data_source is a source of data from real device -->
+    <!-- <data_source type="socket"> -->
+    <!-- </data_source> -->
+
+    <!-- <data_source type="device"> -->
+    <!--    <file> /dev/ttyUSB0 </file> -->
+    <!-- </data_source> -->
+
+    <!-- FDM is not data_source -->
+    <!-- Without a data_source, FDM *seems like* a data_source -->
+    <!-- With data_source, FDM *augments* the data_source for smoother visualization -->
+    <craft>
+        <fdm type="JSBSim">
+            <script>scripts/rocket_flight.xml</script>
+        </fdm>
+
+        <!-- FCS is simulated control system -->
+        <fcs>
+            <file>fcs/JCS.a</file>
+            <config>fcs/config/test.xml</config>
+        </fcs>
+
+        <visualization>
+            <definition>aircraft/sabre_light/sabre_light_3d_def.xml</definition>
+        </visualization>
+    </craft>
+
+</main>

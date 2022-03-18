@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model>
+    <!-- <file>aircraft/sabre_light/block_test.obj</file> -->
+    <file>aircraft/sabre_light/sabre_light.obj</file>
+
+    <!-- <node name="Cube"></node> -->
+
+    <node name="sabre_light.001">
+        <offset>
+            <x> 0.0 </x>
+            <y> 0.0 </y>
+            <z> 0.0 </z>
+        </offset>
+        <rotation>
+            <root>
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </root>
+            <axis>
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 1.0 </z>
+            </axis>
+            <default_value> 0.0 </default_value>
+        </rotation>
+
+        <node name="thrust_Cylinder">
+            <offset>
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </offset>
+            <!-- Pitch -->
+            <rotation>
+                <root>
+                    <x> 0.57 </x>
+                    <y> 0.0 </y>
+                    <z> 0.0 </z>
+                </root>
+                <axis>
+                    <x> 0.0 </x>
+                    <y> 0.0 </y>
+                    <z> 1.0 </z>
+                </axis>
+                <default_value> 0.0 </default_value>
+                <property>engine_pitch_rad</property>
+            </rotation>
+            <!-- Yaw -->
+            <rotation>
+                <root>
+                    <x> 0.57 </x>
+                    <y> 0.0 </y>
+                    <z> 0.0 </z>
+                </root>
+                <axis>
+                    <x> 0.0 </x>
+                    <y> 1.0 </y>
+                    <z> 0.0 </z>
+                </axis>
+                <default_value> 0.0 </default_value>
+                <property>engine_yaw_rad</property>
+            </rotation>
+        </node>
+    </node>
+</model>

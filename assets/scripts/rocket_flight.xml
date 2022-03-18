@@ -8,13 +8,13 @@
     <run start="0.0" end="60" dt="0.008333">
 
         <property> simulation/notify-time-trigger </property>
-        <property value="0"> forces/hold-down </property>
+        <property value="1"> forces/hold-down </property>
 
         <event name="engine start">
             <description>Ignition</description>
             <notify/>
             <condition>
-                simulation/sim-time-sec ge 3.0
+                simulation/sim-time-sec ge 6.0
             </condition>
             <set name="fcs/throttle-cmd-norm[0]" value="1.0" />
         </event>

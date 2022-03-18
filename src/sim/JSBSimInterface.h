@@ -1,14 +1,14 @@
 #ifndef __JSBSIMINTERFACE_H__
 #define __JSBSIMINTERFACE_H__
 
+#include <string>
 #include "IFDM.h"
 #include "FGFDMExec.h"
 #include "FDMData.h"
-#include <string>
 
 class JSBSimInterface : public IFDM {
 public:
-    JSBSimInterface(const std::string& inputFileName);
+    JSBSimInterface(const std::string& inputFileName, FDMData& fdmData);
     ~JSBSimInterface();
     void Init();
     bool CanIterate();

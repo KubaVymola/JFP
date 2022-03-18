@@ -2,12 +2,13 @@
 
 #include <sys/time.h>
 #include <math.h>
+#include "utils/Constants.h"
 #include "FGJSBBase.h"
 #include "models/FGAuxiliary.h"
+#include "models/FGMassBalance.h"
+#include "models/FGAccelerations.h"
 
 // ######################### HELPER FUNCTIONS #########################
-
-static constexpr double radtodeg = 180. / M_PI;
 
 #if defined(__BORLANDC__) || defined(_MSC_VER) || defined(__MINGW32__)
 double JSBSimInterface::getcurrentseconds(void) {
@@ -42,8 +43,36 @@ void JSBSimInterface::sim_nsleep(long nanosec) {
 // ######################### END HELPER FUNCTIONS #########################
 
 
-JSBSimInterface::JSBSimInterface(const std::string& inputFileName) {
+JSBSimInterface::JSBSimInterface(const std::string& inputFileName, FDMData& fdmData) {
     this->inputFileName = inputFileName;
+
+    // ==== Implicit properties =====
+    fdmData.RegisterFloat("time");
+
+    fdmData.RegisterFloat("longitude_deg");
+    fdmData.RegisterFloat("latitude_deg");
+    fdmData.RegisterFloat("altitude_asl_ft");
+
+    fdmData.RegisterFloat("q_1");
+    fdmData.RegisterFloat("q_2");
+    fdmData.RegisterFloat("q_3");
+    fdmData.RegisterFloat("q_4");
+
+    fdmData.RegisterFloat("phi_deg");
+    fdmData.RegisterFloat("theta_deg");
+    fdmData.RegisterFloat("psi_deg");
+
+    fdmData.RegisterFloat("alpha_deg");
+    fdmData.RegisterFloat("beta_deg");
+
+    fdmData.RegisterFloat("cg_x_m");
+    fdmData.RegisterFloat("cg_y_m");
+    fdmData.RegisterFloat("cg_z_m");
+
+    // TODO replace with mapping
+    fdmData.RegisterFloat("engine_pitch_rad");
+    fdmData.RegisterFloat("engine_yaw_rad");
+    // ==== END Implicit properties =====
 }
 
 JSBSimInterface::~JSBSimInterface() {
@@ -104,6 +133,12 @@ void JSBSimInterface::Init() {
     tzset();
     current_seconds = initial_seconds = getcurrentseconds();
 
+
+    string_list properties = FDMExec->GetPropertyCatalog();
+
+    for (auto property : properties) {
+        std::cout << property << std::endl;
+    }
 }
 
 bool JSBSimInterface::CanIterate() {
@@ -177,23 +212,48 @@ void JSBSimInterface::Iterate() {
     }
 }
 
-void JSBSimInterface::UpdateData(FDMData& data) {
+void JSBSimInterface::UpdateData(FDMData& fdmData) {
     hasNewData = false;
+
+    // fdmData.time = FDMExec->GetSimTime();
+    fdmData.SetValue("time", FDMExec->GetSimTime());
+
+
+    fdmData.SetValue("latitude_deg", FDMExec->GetPropagate()->GetLocation().GetLatitudeDeg());
+    fdmData.SetValue("longitude_deg", FDMExec->GetPropagate()->GetLocation().GetLongitudeDeg());
+    fdmData.SetValue("altitude_asl_ft", FDMExec->GetPropagate()->GetAltitudeASL());
     
-    data.time = FDMExec->GetSimTime();
-    
-    data.latitude_deg = FDMExec->GetPropagate()->GetLocation().GetLatitudeDeg();
-    data.longitude_deg = FDMExec->GetPropagate()->GetLocation().GetLongitudeDeg();
-    data.altitude_asl_ft = FDMExec->GetPropagate()->GetAltitudeASL() * 0.3048;
-    // data.altitudeAGL = (float)(FDMExec->GetPropagate()->GetDistanceAGL() * 0.3048);
 
-    data.phi_deg = (float)(radtodeg * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePhi));
-    data.theta_deg = (float)(radtodeg * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht));
-    data.psi_deg = (float)(radtodeg * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePsi));
+    fdmData.SetValue("phi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePhi)));
+    fdmData.SetValue("theta_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht)));
+    fdmData.SetValue("psi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePsi)));
 
-    // // TODO find out how to get alpha and beta values
-    data.alpha_deg = (float)(FDMExec->GetAuxiliary()->Getalpha(JSBSim::FGJSBBase::inDegrees));
-    data.beta_deg = (float)(FDMExec->GetAuxiliary()->Getbeta(JSBSim::FGJSBBase::inDegrees));
 
-    // data.phidot
+    fdmData.SetValue("phi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePhi)));
+    fdmData.SetValue("theta_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht)));
+    fdmData.SetValue("psi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePsi)));
+
+    // fdmData.engine_pitch_rad = 0;
+    fdmData.SetValue("engine_pitch_rad", (float)(DEG_TO_RAD * (5 * sin(current_seconds))));
+    fdmData.SetValue("engine_yaw_rad", (float)(DEG_TO_RAD * (5 * cos(current_seconds))));
+ 
+    FDMExec->GetPropertyManager()
+        ->GetNode("propulsion/engine/pitch-angle-rad")->setDoubleValue(fdmData.GetValue("engine_pitch_rad"));
+    FDMExec->GetPropertyManager()
+        ->GetNode("propulsion/engine/yaw-angle-rad")->setDoubleValue(fdmData.GetValue("engine_yaw_rad"));
+
+    // JSBSim::FGQuaternion attitudeQuaternion = FDMExec->GetPropagate()->GetQuaternion();
+    JSBSim::FGQuaternion attitudeQuaternion = FDMExec->GetPropagate()->GetQuaternionECEF();
+
+    fdmData.SetValue("q_1", attitudeQuaternion(1));
+    fdmData.SetValue("q_2", attitudeQuaternion(2));
+    fdmData.SetValue("q_3", attitudeQuaternion(3));
+    fdmData.SetValue("q_4", attitudeQuaternion(4));
+
+    fdmData.SetValue("alpha_deg", (float)(FDMExec->GetAuxiliary()->Getalpha(JSBSim::FGJSBBase::inDegrees)));
+    fdmData.SetValue("beta_deg", (float)(FDMExec->GetAuxiliary()->Getbeta(JSBSim::FGJSBBase::inDegrees)));
+
+    fdmData.SetFloat("cg_x_m", FDMExec->GetMassBalance()->GetXYZcg(1) * IN_TO_M);
+    fdmData.SetFloat("cg_y_m", FDMExec->GetMassBalance()->GetXYZcg(2) * IN_TO_M);
+    fdmData.SetFloat("cg_z_m", FDMExec->GetMassBalance()->GetXYZcg(3) * IN_TO_M);
 }

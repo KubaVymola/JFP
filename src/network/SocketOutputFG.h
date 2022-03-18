@@ -2,7 +2,7 @@
 #define __SOCKETOUTPUTFG_H__
 
 #include "SocketOutput.h"
-#include "../sim/FDMData.h"
+#include "sim/FDMData.h"
 
 class SocketOutputFG {
 public:

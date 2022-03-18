@@ -40,18 +40,18 @@ void SocketOutputFG::SendData(FDMData& fdmData) const {
     
     socket->Clear();
 
-    socket->Append(fdmData.time);
+    // socket->Append(fdmData.time);
 
-    socket->Append(fdmData.altitude_asl_ft);
-    socket->Append(fdmData.latitude_deg);
-    socket->Append(fdmData.longitude_deg);
+    // socket->Append(fdmData.altitude_asl_ft);
+    // socket->Append(fdmData.latitude_deg);
+    // socket->Append(fdmData.longitude_deg);
 
-    socket->Append(fdmData.phi_deg);
-    socket->Append(fdmData.theta_deg);
-    socket->Append(fdmData.psi_deg);
+    // socket->Append(fdmData.phi_deg);
+    // socket->Append(fdmData.theta_deg);
+    // socket->Append(fdmData.psi_deg);
     
-    socket->Append(fdmData.alpha_deg);
-    socket->Append(fdmData.beta_deg);
+    // socket->Append(fdmData.alpha_deg);
+    // socket->Append(fdmData.beta_deg);
 
     // std::cout << fdmData.time << std::endl;
 

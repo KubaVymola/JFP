@@ -1,0 +1,19 @@
+target_sources(JFP
+    PRIVATE 
+        Ground.cpp
+        Ground.h
+        IRenderable.h
+        IRenderTree.h
+        Line3D.cpp
+        Line3D.h
+        Mesh.cpp
+        Mesh.h
+        Model3D.cpp
+        Model3D.h    
+        Sphere.cpp
+        Sphere.h
+        stb_image.h
+        Texture.cpp
+        Texture.h
+        Vertex.h
+)

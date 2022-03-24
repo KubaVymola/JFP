@@ -4,7 +4,7 @@
 #include <vector>
 #include "glm/mat4x4.hpp"
 #include "Camera.h"
-#include "IRenderable.h"
+#include "renderables/IRenderable.h"
 
 class Renderer {
 public:
@@ -14,7 +14,8 @@ public:
     void RegisterRenderable(IRenderable * renderable);
     void Render(Camera * camera) const;
 
-    static glm::dmat4 projection;
+    static glm::mat4 projection;
+    static glm::vec3 lightPos;
     static glm::dvec3 cameraPos;
 private:
     std::vector<IRenderable *> renderables;

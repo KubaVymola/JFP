@@ -24,11 +24,11 @@ void SimConfigParser::ParseMainXML(const std::string& fileName, SimConfig& simCo
         // Parse FDM
         XMLElement * fdmElem = craft->FirstChildElement("fdm");
         newCraft.FDMType = std::string(fdmElem->Attribute("type"));
-        newCraft.FDMScriptFile = std::string(fdmElem->FirstChildElement("script")->GetText());
+        newCraft.FDMScriptPath = std::string(fdmElem->FirstChildElement("script")->GetText());
 
         // Parse Visualization
         XMLElement * visualizationElem = craft->FirstChildElement("visualization");
-        newCraft.visualizationMainFile = std::string(visualizationElem->FirstChildElement("definition")->GetText());
+        newCraft.visualizationConfigPath = std::string(visualizationElem->FirstChildElement("definition")->GetText());
 
         simConfig.crafts.push_back(newCraft);
     }

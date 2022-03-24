@@ -14,7 +14,7 @@
             <description>Ignition</description>
             <notify/>
             <condition>
-                simulation/sim-time-sec ge 6.0
+                simulation/sim-time-sec ge 3.0
             </condition>
             <set name="fcs/throttle-cmd-norm[0]" value="1.0" />
         </event>

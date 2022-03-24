@@ -1,33 +1,40 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : 
-        Front(glm::vec3(-1.0f, 0.0f, 0.0f)),
-        MovementSpeed(SPEED),
-        MouseSensitivity(ORBIT_SENSITIVITY),
-        Zoom(ZOOM),
-        Distance(5.0f) {
-    Position = position;
+Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) {
+    Front = glm::vec3(-1.0f, 0.0f, 0.0f);
     WorldUp = up;
+    Position = position;
+
     Yaw = yaw;
     Pitch = pitch;
+    Zoom = ZOOM;
+    Distance = 5.0f;
+
+    MouseSensitivity = ORBIT_SENSITIVITY;
+    MovementSpeed = SPEED;
+    
     updateCameraVectors();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : 
-        Front(glm::vec3(-1.0f, 0.0f, 0.0f)),
-        MovementSpeed(SPEED),
-        MouseSensitivity(ORBIT_SENSITIVITY),
-        Zoom(ZOOM),
-        Distance(5.0f) {
-    Position = glm::vec3(posX, posY, posZ);
+Camera::Camera(double posX, double posY, double posZ, float upX, float upY, float upZ, float yaw, float pitch) {
+    Front = glm::vec3(-1.0f, 0.0f, 0.0f);
     WorldUp = glm::vec3(upX, upY, upZ);
+    Position = glm::vec3(posX, posY, posZ);
+
     Yaw = yaw;
     Pitch = pitch;
+    Zoom = ZOOM;
+    Distance = 5.0f;
+
+    MovementSpeed = SPEED;
+    MouseSensitivity = ORBIT_SENSITIVITY;
+
     updateCameraVectors();
 }
 
-const glm::mat4 Camera::GetViewMatrix(glm::vec3 cameraPosition) const {
-    return glm::lookAt(cameraPosition, cameraPosition + Front, Up);
+const glm::mat4 Camera::GetViewMatrix() const {
+    // return glm::lookAt(cameraPosition, cameraPosition + Front, Up);
+    return glm::lookAt(glm::vec3(0.0f), Front, Up);
 }
 
 
@@ -93,9 +100,9 @@ void Camera::SetLeftButtonHolding(bool holding) {
     }
 }
 
-glm::vec3 Camera::GetPosition(glm::vec3 orbitPoint) {
+glm::dvec3 Camera::GetPosition(glm::dvec3 orbitPoint) {
     if(!_freeCamera) {
-        Position = orbitPoint - (Distance * Front);
+        Position = orbitPoint - (glm::dvec3)(Distance * Front);
     }
 
     return Position;
@@ -109,8 +116,6 @@ void Camera::ToggleFreeCamera(GLFWwindow *window) {
         ? FREE_SENSITIVITY
         : ORBIT_SENSITIVITY;
 
-    // std::cout << _freeCamera << std::endl;
-
     if(_freeCamera) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     } else {
@@ -120,11 +125,11 @@ void Camera::ToggleFreeCamera(GLFWwindow *window) {
 
 void Camera::updateCameraVectors() {
     // calculate the new Front vector
-    glm::vec3 front;
-    front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-    front.y = sin(glm::radians(Pitch));
-    front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-    Front = glm::normalize(front);
+    glm::vec3 newFront;
+    newFront.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+    newFront.y = sin(glm::radians(Pitch));
+    newFront.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+    Front = glm::normalize(newFront);
     // also re-calculate the Right and Up vector
     Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     Up    = glm::normalize(glm::cross(Right, Front));

@@ -46,10 +46,10 @@ public:
     Camera(glm::vec3 position = glm::vec3(0.0, 0.5, 1.0), glm::vec3 up = glm::vec3(0.0, 1.0, 0.0), float yaw = YAW, float pitch = PITCH);
 
     // constructor with scalar values
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+    Camera(double posX, double posY, double posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    const glm::mat4 GetViewMatrix(glm::vec3 cameraPosition) const;
+    const glm::mat4 GetViewMatrix() const;
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
@@ -73,13 +73,13 @@ public:
 
     void SetLeftButtonHolding(bool holding);
 
-    glm::vec3 GetPosition(glm::vec3 orbitPoint);
+    glm::dvec3 GetPosition(glm::dvec3 orbitPoint);
 
     void ToggleFreeCamera(GLFWwindow *window);
 
 private:
     // Default camera values
-    glm::vec3 Position;
+    glm::dvec3 Position;
 
     // calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors();

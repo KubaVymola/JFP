@@ -5,7 +5,11 @@ target_sources(JFP
         CraftConfig.h
         FDMData.cpp
         FDMData.h
+        FDMDataMapping.h
+        IFCS.h
         IFDM.h
+        JCS_SITLInterface.cpp
+        JCS_SITLInterface.h
         JSBSimInterface.cpp
         JSBSimInterface.h
         SimConfig.h

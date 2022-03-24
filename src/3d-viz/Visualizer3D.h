@@ -6,7 +6,7 @@
 #include <vector>
 #include "ShaderBank.h"
 #include "Renderer.h"
-#include "IRenderable.h"
+#include "renderables/IRenderable.h"
 #include "ICameraProvider.h"
 
 class Visualizer3D {

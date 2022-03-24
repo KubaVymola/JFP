@@ -8,6 +8,8 @@
 #include "models/FGMassBalance.h"
 #include "models/FGAccelerations.h"
 
+#include "math/FGQuaternion.h"
+
 // ######################### HELPER FUNCTIONS #########################
 
 #if defined(__BORLANDC__) || defined(_MSC_VER) || defined(__MINGW32__)
@@ -47,16 +49,22 @@ JSBSimInterface::JSBSimInterface(const std::string& inputFileName, FDMData& fdmD
     this->inputFileName = inputFileName;
 
     // ==== Implicit properties =====
-    fdmData.RegisterFloat("time");
+    fdmData.RegisterFloat("time_s");
+    fdmData.RegisterFloat("d_time_s");
 
-    fdmData.RegisterFloat("longitude_deg");
-    fdmData.RegisterFloat("latitude_deg");
-    fdmData.RegisterFloat("altitude_asl_ft");
+    fdmData.RegisterDouble("longitude_deg");
+    fdmData.RegisterDouble("latitude_deg");
+    fdmData.RegisterDouble("altitude_asl_ft");
 
-    fdmData.RegisterFloat("q_1");
-    fdmData.RegisterFloat("q_2");
-    fdmData.RegisterFloat("q_3");
-    fdmData.RegisterFloat("q_4");
+    fdmData.RegisterFloat("ecef_q_1");
+    fdmData.RegisterFloat("ecef_q_2");
+    fdmData.RegisterFloat("ecef_q_3");
+    fdmData.RegisterFloat("ecef_q_4");
+
+    fdmData.RegisterFloat("local_q_1");
+    fdmData.RegisterFloat("local_q_2");
+    fdmData.RegisterFloat("local_q_3");
+    fdmData.RegisterFloat("local_q_4");
 
     fdmData.RegisterFloat("phi_deg");
     fdmData.RegisterFloat("theta_deg");
@@ -215,9 +223,12 @@ void JSBSimInterface::Iterate() {
 void JSBSimInterface::UpdateData(FDMData& fdmData) {
     hasNewData = false;
 
-    // fdmData.time = FDMExec->GetSimTime();
-    fdmData.SetValue("time", FDMExec->GetSimTime());
+    float newTime = FDMExec->GetSimTime();
+    float deltaTime = newTime - fdmData.GetValue("time_s");
 
+    // fdmData.time = FDMExec->GetSimTime();
+    fdmData.SetValue("time_s", newTime);
+    fdmData.SetValue("d_time_s", deltaTime);
 
     fdmData.SetValue("latitude_deg", FDMExec->GetPropagate()->GetLocation().GetLatitudeDeg());
     fdmData.SetValue("longitude_deg", FDMExec->GetPropagate()->GetLocation().GetLongitudeDeg());
@@ -228,27 +239,29 @@ void JSBSimInterface::UpdateData(FDMData& fdmData) {
     fdmData.SetValue("theta_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht)));
     fdmData.SetValue("psi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePsi)));
 
-
-    fdmData.SetValue("phi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePhi)));
-    fdmData.SetValue("theta_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht)));
-    fdmData.SetValue("psi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePsi)));
-
     // fdmData.engine_pitch_rad = 0;
-    fdmData.SetValue("engine_pitch_rad", (float)(DEG_TO_RAD * (5 * sin(current_seconds))));
-    fdmData.SetValue("engine_yaw_rad", (float)(DEG_TO_RAD * (5 * cos(current_seconds))));
- 
+
+    // fdmData.SetValue("engine_pitch_rad", (float)(DEG_TO_RAD * (5 * sin(current_seconds))));
+    // fdmData.SetValue("engine_yaw_rad", (float)(DEG_TO_RAD * (5 * cos(current_seconds))));
+
+
     FDMExec->GetPropertyManager()
-        ->GetNode("propulsion/engine/pitch-angle-rad")->setDoubleValue(fdmData.GetValue("engine_pitch_rad"));
+         ->GetNode("propulsion/engine/pitch-angle-rad")->setDoubleValue(fdmData.GetValue("engine_pitch_rad"));
     FDMExec->GetPropertyManager()
         ->GetNode("propulsion/engine/yaw-angle-rad")->setDoubleValue(fdmData.GetValue("engine_yaw_rad"));
 
     // JSBSim::FGQuaternion attitudeQuaternion = FDMExec->GetPropagate()->GetQuaternion();
-    JSBSim::FGQuaternion attitudeQuaternion = FDMExec->GetPropagate()->GetQuaternionECEF();
+    JSBSim::FGQuaternion ECEFQuaternion = FDMExec->GetPropagate()->GetQuaternionECEF();
+    fdmData.SetValue("ecef_q_1", ECEFQuaternion(1));
+    fdmData.SetValue("ecef_q_2", ECEFQuaternion(2));
+    fdmData.SetValue("ecef_q_3", ECEFQuaternion(3));
+    fdmData.SetValue("ecef_q_4", ECEFQuaternion(4));
 
-    fdmData.SetValue("q_1", attitudeQuaternion(1));
-    fdmData.SetValue("q_2", attitudeQuaternion(2));
-    fdmData.SetValue("q_3", attitudeQuaternion(3));
-    fdmData.SetValue("q_4", attitudeQuaternion(4));
+    JSBSim::FGQuaternion localQuaternion = FDMExec->GetPropagate()->GetQuaternion();
+    fdmData.SetValue("local_q_1", localQuaternion(1));
+    fdmData.SetValue("local_q_2", localQuaternion(2));
+    fdmData.SetValue("local_q_3", localQuaternion(3));
+    fdmData.SetValue("local_q_4", localQuaternion(4));
 
     fdmData.SetValue("alpha_deg", (float)(FDMExec->GetAuxiliary()->Getalpha(JSBSim::FGJSBBase::inDegrees)));
     fdmData.SetValue("beta_deg", (float)(FDMExec->GetAuxiliary()->Getbeta(JSBSim::FGJSBBase::inDegrees)));

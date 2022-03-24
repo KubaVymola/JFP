@@ -3,7 +3,8 @@
 #include "tinyxml2.h"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "Model3D.h"
+#include "renderables/Model3D.h"
+#include "Renderer.h"
 #include "utils/Constants.h"
 
 CraftVisualizer::CraftVisualizer() {
@@ -164,33 +165,36 @@ Mesh * CraftVisualizer::processMesh(aiMesh *mesh, const aiScene *scene) {
 }
 
 void CraftVisualizer::Render(Camera * camera, FDMData fdmData) const {
-    glm::vec3 rocketPos = glm::vec3(fdmData.GetValue("latitude_deg") * EARTH_PERIPHERAL_CONSTANT,
-                                    fdmData.GetValue("altitude_asl_ft") * FT_TO_M,
-                                    fdmData.GetValue("longitude_deg") * EARTH_PERIPHERAL_CONSTANT);
+    glm::dvec3 rocketPos = glm::dvec3(fdmData.GetValue("latitude_deg") * EARTH_PERIPHERAL_CONSTANT,
+                                      fdmData.GetValue("altitude_asl_ft") * FT_TO_M,
+                                      fdmData.GetValue("longitude_deg") * EARTH_PERIPHERAL_CONSTANT);
 
-    // glm::vec3 rocketPos = glm::vec3(0.0f,
-    //                                 0.0f,
-    //                                 0.0f);
+    glm::vec3 rocketPosToCamera = rocketPos - Renderer::cameraPos;
     
-    glm::mat4 modelPosition = glm::mat4(1.0f);
-    modelPosition = glm::translate(modelPosition, rocketPos);
+    glm::mat4 modelTranslation = glm::mat4(1.0f);
+    modelTranslation = glm::translate(modelTranslation, rocketPosToCamera);
 
-    glm::mat4 quaternionRotation = glm::mat4(1.0f);
-    // Change coordinate systems from JSBsim to OpenGL
-    quaternionRotation = glm::mat4(-1.0f, 0.0f, 0.0f, 0.0f,
-                                    0.0f, 0.0f, -1.0f, 0.0f,
-                                    0.0f, 1.0f, 0.0f, 0.0f,
-                                    0.0f, 0.0f, 0.0f, 1.0f);
-    quaternionRotation = glm::rotate(quaternionRotation, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    quaternionRotation *= glm::toMat4(glm::quat(fdmData.GetValue("q_1"),
-                                                fdmData.GetValue("q_2"),
-                                                fdmData.GetValue("q_3"),
-                                                fdmData.GetValue("q_4")));
-    quaternionRotation = glm::translate(quaternionRotation, -glm::vec3(fdmData.GetValue("cg_x_m"),
-                                                                       -fdmData.GetValue("cg_y_m"),
-                                                                       fdmData.GetValue("cg_z_m")));
-
+    // glm::mat4 quaternionRotation = glm::mat4(1.0f);
     glm::mat4 modelRotation = glm::mat4(1.0f);
+    // Change coordinate systems from JSBsim to OpenGL
+    modelRotation = glm::mat4(-1.0f, 0.0f, 0.0f, 0.0f,
+                               0.0f, 0.0f, -1.0f, 0.0f,
+                               0.0f, 1.0f, 0.0f, 0.0f,
+                               0.0f, 0.0f, 0.0f, 1.0f);
+    modelRotation = glm::rotate(modelRotation, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Apply rotation of model in ECEF frame
+    modelRotation *= glm::toMat4(glm::quat(fdmData.GetValue("ecef_q_1"),
+                                           fdmData.GetValue("ecef_q_2"),
+                                           fdmData.GetValue("ecef_q_3"),
+                                           fdmData.GetValue("ecef_q_4")));
+
+    // Move rotation origin to CG
+    modelRotation = glm::translate(modelRotation, -glm::vec3(fdmData.GetValue("cg_x_m"),
+                                                             -fdmData.GetValue("cg_y_m"),
+                                                             fdmData.GetValue("cg_z_m")));
+
+    // Rotations to fit changing axis definitions (between JSBSim and OpenGL)
     modelRotation = glm::rotate(modelRotation, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     modelRotation *= glm::mat4(1.0f, 0.0f, 0.0f, 0.0f,
                                0.0f, 1.0f, 0.0f, 0.0f,
@@ -198,7 +202,7 @@ void CraftVisualizer::Render(Camera * camera, FDMData fdmData) const {
                                0.0f, 0.0f, 0.0f, 1.0f);
 
 
-    glm::mat4 model = modelPosition * quaternionRotation * modelRotation;
+    glm::mat4 model = modelTranslation * modelRotation;
 
     for (IRenderTree * child : _children) {
         child->Render(camera, fdmData, model, glm::mat4(1.0f));

@@ -34,3 +34,6 @@ add_subdirectory(lib/jsbsim)
 
 # JFP
 add_subdirectory(src)
+
+# JCS
+add_subdirectory(JCS)

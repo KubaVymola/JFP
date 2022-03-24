@@ -3,6 +3,8 @@
 #include <iostream>
 #include "ShaderBank.h"
 #include "Camera.h"
+#include "renderables/Line3D.h"
+#include "renderables/Sphere.h"
 #include "utils/Constants.h"
 
 Camera * camera = new Camera();
@@ -15,13 +17,51 @@ int Visualizer3D::windowHeight;
 
 Visualizer3D::Visualizer3D() : _hasClosed(false) {
     this->OpenWindow(1024.0f, 768.0f);
-    // ShaderBank is singleton
-    // _shaderBank = new ShaderBank();
-    // _rocketModel = new Model3D("aircraft/sabre_light/block_test.obj");
-    // _rocketModel = new Craft("aircraft/sabre_light/sabre_light_3d_def.xml");
 
     _renderer = new Renderer();
     _renderer->Init();
+
+    // ==== Cartesian-coordinates indicator (at origin) ====
+    // X-coord
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
+                                             glm::vec3(1.0f, 0.0f, 0.0f),
+                                             glm::vec3(1.0f, 0.0f, 0.0f),
+                                             glm::vec3(1.0f, 0.0f, 0.0f)));
+    // Y-coord                       
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
+                                             glm::vec3(0.0f, 1.0f, 0.0f),
+                                             glm::vec3(0.0f, 1.0f, 0.0f),
+                                             glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    // Z-coord
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
+                                             glm::vec3(0.0f, 0.0f, 1.0f),
+                                             glm::vec3(0.0f, 0.0f, 1.0f),
+                                             glm::vec3(0.0f, 0.0f, 1.0f)));
+
+    // ==== END Cartesian-coordinates indicator ====
+
+
+    // ==== Cartesian-coordinates indicator (at origin) ====
+    // X-coord
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(11.0f, 0.0f, 0.0f),
+                                             glm::vec3(12.0f, 0.0f, 0.0f),
+                                             glm::vec3(1.0f, 0.0f, 0.0f),
+                                             glm::vec3(1.0f, 0.0f, 0.0f)));
+    // Y-coord                       
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(11.0f, 0.0f, 0.0f),
+                                             glm::vec3(11.0f, 1.0f, 0.0f),
+                                             glm::vec3(0.0f, 1.0f, 0.0f),
+                                             glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    // Z-coord
+    _renderer->RegisterRenderable(new Line3D(glm::vec3(11.0f, 0.0f, 0.0f),
+                                             glm::vec3(11.0f, 0.0f, 1.0f),
+                                             glm::vec3(0.0f, 0.0f, 1.0f),
+                                             glm::vec3(0.0f, 0.0f, 1.0f)));
+    // ==== END Cartesian-coordinates indicator ====
+
+    _renderer->RegisterRenderable(new Sphere(glm::vec3(1.0f, 0.0f, 0.0f), 0.5));
 }
 
 Visualizer3D::~Visualizer3D() {

@@ -1,33 +1,17 @@
 #include "Renderer.h"
 
+#include "glm/vec3.hpp"
 #include "ShaderBank.h"
 #include "Visualizer3D.h"
-#include "Line3D.h"
+#include "renderables/Line3D.h"
 #include "utils/Constants.h"
 
-glm::dmat4 Renderer::projection;
+glm::mat4 Renderer::projection;
+glm::vec3 Renderer::lightPos = glm::vec3(5.0f, 50.0f, 5.0f);
 glm::dvec3 Renderer::cameraPos;
 
 Renderer::Renderer() {
-    // ==== Cartesian-coordinates indicator (at origin) ====
-    // X-coord
-    renderables.push_back(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(1.0f, 0.0f, 0.0f),
-                                     glm::vec3(1.0f, 0.0f, 0.0f),
-                                     glm::vec3(1.0f, 0.0f, 0.0f)));
-    // Y-coord                       
-    renderables.push_back(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(0.0f, 1.0f, 0.0f),
-                                     glm::vec3(0.0f, 1.0f, 0.0f),
-                                     glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    // Z-coord
-    renderables.push_back(new Line3D(glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(0.0f, 0.0f, 1.0f),
-                                     glm::vec3(0.0f, 0.0f, 1.0f),
-                                     glm::vec3(0.0f, 0.0f, 1.0f)));
-
-    // ==== END Cartesian-coordinates indicator ====
+    
 }
 
 Renderer::~Renderer() {
@@ -55,10 +39,10 @@ void Renderer::Render(Camera * camera) const {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Renderer::projection = glm::perspective(glm::radians(45.0),
-                                            (double)Visualizer3D::windowWidth / Visualizer3D::windowHeight,
-                                            0.1,
-                                            300.0);
+    Renderer::projection = glm::perspective((float)glm::radians(45.0),
+                                            (float)Visualizer3D::windowWidth / Visualizer3D::windowHeight,
+                                            0.1f,
+                                            300.0f);
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

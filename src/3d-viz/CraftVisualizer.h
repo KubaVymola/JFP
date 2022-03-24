@@ -8,9 +8,9 @@
 #include "assimp/postprocess.h"
 #include "glm/mat4x4.hpp"
 #include "tinyxml2.h"
-#include "IRenderable.h"
-#include "IRenderTree.h"
-#include "Mesh.h"
+#include "renderables/IRenderable.h"
+#include "renderables/IRenderTree.h"
+#include "renderables/Mesh.h"
 #include "Camera.h"
 #include "sim/FDMData.h"
 

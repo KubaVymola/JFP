@@ -5,7 +5,7 @@
 
 class ICameraProvider {
 public:
-    virtual glm::vec3 GetCameraPosition() const = 0;
+    virtual glm::dvec3 GetCameraPosition() const = 0;
 };
 
 #endif

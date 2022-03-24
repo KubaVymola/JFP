@@ -17,10 +17,7 @@
 #include "3d-viz/ICameraProvider.h"
 #include "3d-viz/Visualizer3D.h"
 #include "sim/Craft.h"
-
-// TODO make port CLI option
-// int PORT = 5550;
-// std::string JFPScriptFilename;
+#include "sim/JCS_SITLInterface.h"
 
 void parseCLIParams(int argc, char ** argv, SimConfig& simConfig) {
     InputParser parser(argc, argv);
@@ -38,6 +35,11 @@ void parseCLIParams(int argc, char ** argv, SimConfig& simConfig) {
             case 1:
                 simConfig.JFPMainXML = argv[i];
                 break;
+            case 2:
+                if (simConfig.crafts.size() > 0) {
+                    simConfig.crafts[0].FCSPath = argv[i];
+                }
+                break;
         }
 
         posArgId++;
@@ -53,7 +55,7 @@ void parseCLIParams(int argc, char ** argv, SimConfig& simConfig) {
 void JFPInit(const SimConfig& simConfig, std::vector<Craft *>& JFPcrafts, Visualizer3D& vizWindow) {
     for (auto craftConfig : simConfig.crafts) {
         // TODO informative exit exception (global)
-        if (craftConfig.FDMScriptFile.empty()) continue;
+        if (craftConfig.FDMScriptPath.empty()) continue;
 
         Craft * newCraft = new Craft();        
         newCraft->Init(craftConfig);
@@ -81,29 +83,21 @@ void JFPLoop() {
 int main(int argc, char **argv) {
     SimConfig simConfig;
     std::vector<Craft *> crafts;
-    
+
     std::cout << "Jakub's Flight Package, version 0.0.1" << std::endl; 
-    
+
     // First run to get JFP main XML file
     parseCLIParams(argc, argv, simConfig);
-
-    std::cout << 1 << std::endl;
 
     SimConfigParser configParser;
     configParser.ParseMainXML(simConfig.JFPMainXML, simConfig);
 
-    std::cout << 2 << std::endl;
-
     // Second run to override config which is also provided via CLI
     parseCLIParams(argc, argv, simConfig);
-
-    std::cout << 3 << std::endl;
 
     Visualizer3D vizWindow;
 
     JFPInit(simConfig, crafts, vizWindow);
-
-    std::cout << 4 << std::endl;
 
     bool keepRunning = true;
     while (keepRunning) {

@@ -5,10 +5,11 @@
 
 struct CraftConfig {
     std::string FDMType;
-    std::string FDMScriptFile;
+    std::string FDMScriptPath;
+    std::string FCSPath;
     int FDMSocketPort;
 
-    std::string visualizationMainFile;
+    std::string visualizationConfigPath;
 };
 
 #endif

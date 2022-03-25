@@ -46,12 +46,6 @@ void Renderer::Render(Camera &camera) const {
                                             (float)Visualizer3D::windowWidth / Visualizer3D::windowHeight,
                                             near,
                                             far);
-
-    // projection[2][2] = near / (near - far);
-    // projection[3][2] = (far * near) / (near - far);
-
-    // std::cout << projection[2][2] << std::endl;
-    // exit(0);
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

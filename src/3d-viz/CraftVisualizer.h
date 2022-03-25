@@ -28,13 +28,13 @@ public:
 private:
     void loadModel(const std::string& path);
     void processObjNode(aiNode * node, const aiScene * scene);
-    Mesh * processMesh(aiMesh * mesh, const aiScene * scene);
+    Mesh processMesh(aiMesh * mesh, const aiScene * scene);
     void processXMLElement(IRenderTree * currentNode, tinyxml2::XMLElement * localRoot);
 
     std::string _fileName;
     std::string _objFileName;
     std::vector<IRenderTree *> _children;
-    std::map<std::string, Mesh *> _meshes;
+    std::vector<Mesh> _meshes;
 };
 
 #endif

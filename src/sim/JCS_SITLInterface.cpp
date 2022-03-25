@@ -48,10 +48,10 @@ void JCS_SITLInterface::Iterate(FDMData &fdmData) const {
     float theta_got = attitudeQuat.GetEuler(2) * RAD_TO_DEG;
     float psi_got = attitudeQuat.GetEuler(3) * RAD_TO_DEG;
 
-    std::cout << "Got yaw " << phi_got
-              << ", Got pitch " << theta_got
-              << ", Got roll " << psi_got
-              << std::endl;
+    // std::cout << "Got yaw " << phi_got
+    //           << ", Got pitch " << theta_got
+    //           << ", Got roll " << psi_got
+    //           << std::endl;
 
     data[0] = fdmData.GetValue("local_q_1");
     data[1] = fdmData.GetValue("local_q_2");

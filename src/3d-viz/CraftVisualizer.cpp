@@ -1,5 +1,6 @@
 #include "CraftVisualizer.h"
 
+#include <algorithm>
 #include "tinyxml2.h"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -12,9 +13,9 @@ CraftVisualizer::CraftVisualizer() {
 }
 
 CraftVisualizer::~CraftVisualizer() {
-    for (std::pair<std::string, Mesh *> meshPair : _meshes) {
-        delete meshPair.second;
-    }
+    // for (std::pair<std::string, Mesh *> meshPair : _meshes) {
+    //     delete meshPair.second;
+    // }
 }
 
 void CraftVisualizer::Init(const std::string& fileName) {
@@ -37,6 +38,21 @@ void CraftVisualizer::Init(const std::string& fileName) {
     processXMLElement(this, root);
 }
 
+void CraftVisualizer::loadModel(const std::string& path) {
+    Assimp::Importer importer;
+    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    // const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate);
+
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        printf("ERROR::ASSIMP\n");
+        return;
+    }
+
+    processObjNode(scene->mRootNode, scene);
+
+    printf("Loaded model with %ld meshes\n", _meshes.size());
+}
+
 void CraftVisualizer::processXMLElement(IRenderTree * currentRenderNode, tinyxml2::XMLElement * localRoot) {
     for (tinyxml2::XMLElement * e = localRoot->FirstChildElement("node");
             e != NULL;
@@ -44,7 +60,18 @@ void CraftVisualizer::processXMLElement(IRenderTree * currentRenderNode, tinyxml
         
         std::string elementName = e->Attribute("name");
 
-        Mesh * mesh = _meshes.at(elementName.c_str());
+        // auto it = std::find_if(_meshes.begin(), _meshes.end(), [&elementName](const Mesh& obj){ return obj.GetName() == elementName; });
+
+        Mesh * mesh;
+        for (auto& m : _meshes) {
+            if (m.GetName() == elementName.c_str()) {
+                mesh = &m;
+                break;
+            }
+        }
+
+        
+
         Model3D * newModel = new Model3D(mesh);
 
         // ==== Add offset ====
@@ -94,23 +121,8 @@ void CraftVisualizer::processXMLElement(IRenderTree * currentRenderNode, tinyxml
         currentRenderNode->AddChild(newModel);
 
         std::cout << elementName << std::endl;
-        processXMLElement(newModel ,e);
+        processXMLElement(newModel, e);
     }
-}
-
-void CraftVisualizer::loadModel(const std::string& path) {
-    Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-    // const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate);
-
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        printf("ERROR::ASSIMP\n");
-        return;
-    }
-
-    processObjNode(scene->mRootNode, scene);
-
-    printf("Loaded model with %ld meshes\n", _meshes.size());
 }
 
 void CraftVisualizer::processObjNode(aiNode *node, const aiScene *scene) {
@@ -118,9 +130,10 @@ void CraftVisualizer::processObjNode(aiNode *node, const aiScene *scene) {
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 
-        Mesh * newMesh = processMesh(mesh, scene);
-        _meshes[newMesh->GetName()] = newMesh;
+        Mesh newMesh = processMesh(mesh, scene);
+        _meshes.push_back(newMesh);
     }
+    
     // then do the same for each of its children
     for(unsigned int i = 0; i < node->mNumChildren; i++)
     {
@@ -128,7 +141,7 @@ void CraftVisualizer::processObjNode(aiNode *node, const aiScene *scene) {
     }
 }
 
-Mesh * CraftVisualizer::processMesh(aiMesh *mesh, const aiScene *scene) {
+Mesh CraftVisualizer::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -161,7 +174,8 @@ Mesh * CraftVisualizer::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::string meshName = mesh->mName.C_Str();
     std::cout << meshName << std::endl;
 
-    return new Mesh(vertices, indices, meshName);
+    Mesh toReturn(vertices, indices, meshName);
+    return toReturn;
 }
 
 void CraftVisualizer::Render(Camera * camera, FDMData fdmData) const {

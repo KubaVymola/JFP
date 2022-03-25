@@ -141,12 +141,12 @@ void JSBSimInterface::Init() {
     tzset();
     current_seconds = initial_seconds = getcurrentseconds();
 
+    // Print all properties from JSBSim
+    // string_list properties = FDMExec->GetPropertyCatalog();
 
-    string_list properties = FDMExec->GetPropertyCatalog();
-
-    for (auto property : properties) {
-        std::cout << property << std::endl;
-    }
+    // for (auto property : properties) {
+    //     std::cout << property << std::endl;
+    // }
 }
 
 bool JSBSimInterface::CanIterate() {

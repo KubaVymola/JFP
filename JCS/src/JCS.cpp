@@ -90,8 +90,8 @@ extern "C" void init() {
 
     targetAttitude = Quaternion(0.0f, 90.0f * DEG_TO_RAD, 0.0f);
 
-    init_pid(pitch_pid, 0.3f, 0.0f, 0.25f, 0.15f, -10.0f, 10.0f);
-    init_pid(yaw_pid,   0.3f, 0.0f, 0.25f, 0.15f, -10.0f, 10.0f);
+    init_pid(pitch_pid, 0.6f, 0.0f, 0.05f, 0.15f, -10.0f, 10.0f);
+    init_pid(yaw_pid,   0.6f, 0.0f, 0.05f, 0.15f, -10.0f, 10.0f);
 
     printf("JCS Initialized\n");
 }
@@ -117,10 +117,10 @@ extern "C" void loop() {
     // Quaternion difference = targetAttitude.Conjugate();
     Vec3 eulerAngles = (attitude * targetAttitude.Conjugate()).ToEulerAngles();
 
-    printf("yw: %f, pt: %f, rl: %f\n",
-           eulerAngles.GetYaw() * RAD_TO_DEG,
-           eulerAngles.GetPitch() * RAD_TO_DEG,
-           eulerAngles.GetRoll() * RAD_TO_DEG);
+    // printf("yw: %f, pt: %f, rl: %f\n",
+    //        eulerAngles.GetYaw() * RAD_TO_DEG,
+    //        eulerAngles.GetPitch() * RAD_TO_DEG,
+    //        eulerAngles.GetRoll() * RAD_TO_DEG);
 
     // Update PIDs
     enginePitch = pid_update(pitch_pid, 0.0f, eulerAngles.GetPitch() * RAD_TO_DEG, delta_t);
@@ -136,7 +136,7 @@ extern "C" void sendData(unsigned char * binaryData) {
 
     memcpy(binaryData, data, sizeof(data));
 
-    printf("JFP sending engine pitch: %f, yaw: %f\n", enginePitch, engineYaw);
+    // printf("JFP sending engine pitch: %f, yaw: %f\n", enginePitch, engineYaw);
 }
 
 

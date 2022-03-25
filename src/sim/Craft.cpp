@@ -10,33 +10,33 @@ Craft::Craft() {
 
 void Craft::Init(const CraftConfig& craftConfig) {
     if (craftConfig.FDMType == "JSBSim") {
-        fdmInterface = new JSBSimInterface(craftConfig.FDMScriptPath, fdmData);
-        fdmInterface->Init();
+        _fdmInterface = new JSBSimInterface(craftConfig.FDMScriptPath, fdmData);
+        _fdmInterface->Init();
         std::cout << "Initialized JSBSim instance with input script " << craftConfig.FDMScriptPath << std::endl;
 
     }
 
     _fcsInterface = new JCS_SITLInterface(craftConfig.FCSPath);
 
-    craftVisualizer.Init(craftConfig.visualizationConfigPath);
+    _craftVisualizer.Init(craftConfig.visualizationConfigPath);
     std::cout << "Initialized 3D visualizer from file " << craftConfig.visualizationConfigPath << std::endl;    
 }
 
 bool Craft::CanIterate() const {
-    return fdmInterface->CanIterate();
+    return _fdmInterface->CanIterate();
 }
 
 void Craft::Iterate() {
-    fdmInterface->Iterate();
+    _fdmInterface->Iterate();
 
-    if (fdmInterface->HasNewData()) {
-        fdmInterface->UpdateData(fdmData);
+    if (_fdmInterface->HasNewData()) {
+        _fdmInterface->UpdateData(fdmData);
         _fcsInterface->Iterate(fdmData);
     }
 }
 
 void Craft::Render(Camera * camera) const {
-    craftVisualizer.Render(camera, fdmData);
+    _craftVisualizer.Render(camera, fdmData);
 }
 
 glm::dvec3 Craft::GetCameraPosition() const {

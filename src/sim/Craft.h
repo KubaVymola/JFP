@@ -20,10 +20,10 @@ public:
 
     FDMData fdmData;
 private:
-    IFDM * fdmInterface;
+    IFDM * _fdmInterface;
     IFCS * _fcsInterface;
 
-    CraftVisualizer craftVisualizer;
+    CraftVisualizer _craftVisualizer;
 };
 
 #endif

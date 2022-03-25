@@ -7,7 +7,7 @@
 #include "utils/Constants.h"
 
 glm::mat4 Renderer::projection;
-glm::vec3 Renderer::lightPos = glm::vec3(5.0f, 50.0f, 5.0f);
+glm::vec3 Renderer::lightPos = glm::vec3(-5'000'000.0f, 0.0f, 0.0f);
 glm::dvec3 Renderer::cameraPos;
 
 Renderer::Renderer() {
@@ -35,14 +35,23 @@ void Renderer::RegisterRenderable(IRenderable * renderable) {
     renderables.push_back(renderable);
 }
 
-void Renderer::Render(Camera * camera) const {
+void Renderer::Render(Camera &camera) const {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    const float near = 0.1f;
+    const float far = 1'000'000.0f;
+
     Renderer::projection = glm::perspective((float)glm::radians(45.0),
                                             (float)Visualizer3D::windowWidth / Visualizer3D::windowHeight,
-                                            0.1f,
-                                            300.0f);
+                                            near,
+                                            far);
+
+    // projection[2][2] = near / (near - far);
+    // projection[3][2] = (far * near) / (near - far);
+
+    // std::cout << projection[2][2] << std::endl;
+    // exit(0);
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

@@ -29,11 +29,11 @@ struct RotationStruct {
 
 class Model3D : public IRenderTree {
 public:
-    Model3D(Mesh * mesh);
-    virtual void AddChild(IRenderTree * child) override;
+    Model3D(Mesh mesh);
+    virtual void AddChild(IRenderTree *child) override;
     void SetOffset(glm::vec3 offset);
     void AddRotation(RotationStruct rotation);
-    virtual void Render(Camera * camera,
+    virtual void Render(Camera &camera,
                         FDMData fdmData,
                         glm::mat4 craftTransform,
                         glm::mat4 parentModelTransform) const override;
@@ -43,7 +43,7 @@ private:
     // Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 
     // std::vector<Mesh> meshes;
-    Mesh * _mesh;
+    Mesh _mesh;
     std::vector<IRenderTree *> _children;
     std::vector<RotationStruct> _rotations;
     glm::vec3 _offset = glm::vec3(0.0f);

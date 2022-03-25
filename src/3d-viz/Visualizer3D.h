@@ -22,6 +22,8 @@ public:
 
     static int windowWidth;
     static int windowHeight;
+
+    static Camera camera;
 private:
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
     static void mousePositionCallback(GLFWwindow *window, double xpos, double ypos);

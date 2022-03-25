@@ -16,10 +16,16 @@ CraftVisualizer::~CraftVisualizer() {
     // for (std::pair<std::string, Mesh *> meshPair : _meshes) {
     //     delete meshPair.second;
     // }
+
+    // TODO warning: delete called on 'IRenderTree' that is abstract but has non-virtual destructor
+    for (auto renderable : _children) {
+        delete renderable;
+    }
 }
 
-void CraftVisualizer::Init(const std::string& fileName) {
-    // TODO parse XML input
+// TODO copy contructor?
+
+void CraftVisualizer::Init(const std::string &fileName) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(fileName.c_str());
 
@@ -31,14 +37,14 @@ void CraftVisualizer::Init(const std::string& fileName) {
     std::cout << ".obj file: " << _objFileName << std::endl;
 
     // Parse obj file
-    loadModel(_objFileName);
+    loadObjFile(_objFileName);
 
     // Process xml nodes
     std::cout << "All XML elements:" << std::endl;
     processXMLElement(this, root);
 }
 
-void CraftVisualizer::loadModel(const std::string& path) {
+void CraftVisualizer::loadObjFile(const std::string &path) {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
     // const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate);
@@ -53,24 +59,14 @@ void CraftVisualizer::loadModel(const std::string& path) {
     printf("Loaded model with %ld meshes\n", _meshes.size());
 }
 
-void CraftVisualizer::processXMLElement(IRenderTree * currentRenderNode, tinyxml2::XMLElement * localRoot) {
+void CraftVisualizer::processXMLElement(IRenderTree *currentRenderNode, tinyxml2::XMLElement *localRoot) {
     for (tinyxml2::XMLElement * e = localRoot->FirstChildElement("node");
             e != NULL;
             e = e->NextSiblingElement("node")) {
         
         std::string elementName = e->Attribute("name");
 
-        // auto it = std::find_if(_meshes.begin(), _meshes.end(), [&elementName](const Mesh& obj){ return obj.GetName() == elementName; });
-
-        Mesh * mesh;
-        for (auto& m : _meshes) {
-            if (m.GetName() == elementName.c_str()) {
-                mesh = &m;
-                break;
-            }
-        }
-
-        
+        Mesh mesh = *std::find_if(_meshes.begin(), _meshes.end(), [&elementName](const Mesh& obj){ return obj.GetName() == elementName; });
 
         Model3D * newModel = new Model3D(mesh);
 
@@ -178,7 +174,7 @@ Mesh CraftVisualizer::processMesh(aiMesh *mesh, const aiScene *scene) {
     return toReturn;
 }
 
-void CraftVisualizer::Render(Camera * camera, FDMData fdmData) const {
+void CraftVisualizer::Render(Camera &camera, FDMData fdmData) const {
     glm::dvec3 rocketPos = glm::dvec3(fdmData.GetValue("latitude_deg") * EARTH_PERIPHERAL_CONSTANT,
                                       fdmData.GetValue("altitude_asl_ft") * FT_TO_M,
                                       fdmData.GetValue("longitude_deg") * EARTH_PERIPHERAL_CONSTANT);
@@ -218,17 +214,17 @@ void CraftVisualizer::Render(Camera * camera, FDMData fdmData) const {
 
     glm::mat4 model = modelTranslation * modelRotation;
 
-    for (IRenderTree * child : _children) {
+    for (IRenderTree *child : _children) {
         child->Render(camera, fdmData, model, glm::mat4(1.0f));
     }
 }
 
 
-void CraftVisualizer::AddChild(IRenderTree * child) {
+void CraftVisualizer::AddChild(IRenderTree *child) {
     _children.push_back(child);
 }
 
-void CraftVisualizer::Render(Camera * camera,
+void CraftVisualizer::Render(Camera &camera,
                    FDMData fdmData,
                    glm::mat4 rootTransform,
                    glm::mat4 parentTransform) const {

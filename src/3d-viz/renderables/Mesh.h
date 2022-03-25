@@ -11,6 +11,7 @@
 
 class Mesh {
 public:
+    Mesh() = default;
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, const std::string& name);
     void Draw() const;
     std::string GetName() const { return _name; }

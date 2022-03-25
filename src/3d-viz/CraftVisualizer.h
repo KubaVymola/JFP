@@ -18,18 +18,18 @@ class CraftVisualizer : public IRenderTree {
 public:
     CraftVisualizer();
     ~CraftVisualizer();
-    void Init (const std::string& fileName);
-    virtual void AddChild(IRenderTree * child) override;
-    virtual void Render(Camera * camera, FDMData) const;
-    virtual void Render(Camera * camera,
+    void Init (const std::string &fileName);
+    virtual void AddChild(IRenderTree *child) override;
+    virtual void Render(Camera &camera, FDMData fdmData) const;
+    virtual void Render(Camera &camera,
                         FDMData fdmData,
                         glm::mat4 rootTransform,
                         glm::mat4 parentTransform) const override;
 private:
-    void loadModel(const std::string& path);
-    void processObjNode(aiNode * node, const aiScene * scene);
-    Mesh processMesh(aiMesh * mesh, const aiScene * scene);
-    void processXMLElement(IRenderTree * currentNode, tinyxml2::XMLElement * localRoot);
+    void loadObjFile(const std::string &path);
+    void processObjNode(aiNode *node, const aiScene *scene);
+    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+    void processXMLElement(IRenderTree *currentNode, tinyxml2::XMLElement *localRoot);
 
     std::string _fileName;
     std::string _objFileName;

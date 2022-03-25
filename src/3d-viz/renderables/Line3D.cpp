@@ -37,7 +37,7 @@ Line3D::Line3D(glm::dvec3 posFrom, glm::dvec3 posTo, glm::vec3 colorFrom, glm::v
     glEnableVertexAttribArray(1);
 }
 
-void Line3D::Render(Camera * camera) const {
+void Line3D::Render(Camera& camera) const {
     Shader * shader = ShaderBank::getInstance().GetShader(ShaderTypes::SIMPLE_3D_SHADER);
 
     glm::vec3 linePosToCamera = _root - Renderer::cameraPos;
@@ -45,7 +45,7 @@ void Line3D::Render(Camera * camera) const {
 
     shader->Use();
     shader->SetMat4("model", model);
-    shader->SetMat4("view", camera->GetViewMatrix());
+    shader->SetMat4("view", camera.GetViewMatrix());
     shader->SetMat4("projection", Renderer::projection);
 
     glBindVertexArray(_VAO);

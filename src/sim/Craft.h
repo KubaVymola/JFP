@@ -15,7 +15,7 @@ public:
     void Init(const CraftConfig& craftConfig);
     bool CanIterate() const;
     void Iterate();
-    virtual void Render(Camera * camera) const override;
+    virtual void Render(Camera& camera) const override;
     virtual glm::dvec3 GetCameraPosition() const override;
 
     FDMData fdmData;

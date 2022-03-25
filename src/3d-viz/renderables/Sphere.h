@@ -13,7 +13,7 @@
 class Sphere : public IRenderable {
 public:
     Sphere(glm::dvec3 position, double radius, int stackCount = 20, int sectorCount = 20);
-    virtual void Render(Camera * camera) const override;
+    virtual void Render(Camera &camera) const override;
 private:
     glm::dvec3 _position;
     double radius;
@@ -22,7 +22,7 @@ private:
     std::vector<unsigned int> _indeces;
     std::vector<glm::vec3> _texCoords;
 
-    Mesh * _mesh;
+    Mesh _mesh;
 };
 
 #endif

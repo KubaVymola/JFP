@@ -6,7 +6,7 @@
 
 class IRenderable {
 public:
-    virtual void Render(Camera * camera) const = 0;
+    virtual void Render(Camera& camera) const = 0;
 };
 
 #endif

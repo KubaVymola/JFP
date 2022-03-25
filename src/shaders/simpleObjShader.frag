@@ -2,6 +2,7 @@
 
 in vec3 FragPos;
 in vec3 Normal;
+in float logz;
 
 out vec4 FragColor;
 
@@ -30,4 +31,6 @@ void main() {
     // vec3 result = (ambient + diffuse + specular) * objectColor;
     vec3 result = (ambient + diffuse) * objectColor;
     FragColor = vec4(result, 1.0);
+
+    gl_FragDepth = logz;
 }

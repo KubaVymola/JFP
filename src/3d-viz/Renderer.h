@@ -12,7 +12,7 @@ public:
     ~Renderer();
     void Init();
     void RegisterRenderable(IRenderable * renderable);
-    void Render(Camera * camera) const;
+    void Render(Camera &camera) const;
 
     static glm::mat4 projection;
     static glm::vec3 lightPos;

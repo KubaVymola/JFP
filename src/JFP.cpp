@@ -52,16 +52,16 @@ void parseCLIParams(int argc, char ** argv, SimConfig& simConfig) {
 //     }
 // }
 
-void JFPInit(const SimConfig& simConfig, std::vector<Craft *>& JFPcrafts, Visualizer3D& vizWindow) {
+void JFPInit(const SimConfig &simConfig, std::vector<Craft *> &JFPcrafts, Visualizer3D &vizWindow) {
     for (auto craftConfig : simConfig.crafts) {
         // TODO informative exit exception (global)
         if (craftConfig.FDMScriptPath.empty()) continue;
 
-        Craft * newCraft = new Craft();        
+        Craft *newCraft = new Craft();
         newCraft->Init(craftConfig);
 
         vizWindow.RegisterRenderable(newCraft);
-        vizWindow.RegisterCameraProvider((ICameraProvider *)newCraft);
+        vizWindow.RegisterCameraProvider(newCraft);
 
         JFPcrafts.push_back(newCraft);
     }

@@ -2,12 +2,15 @@
 
 #include <iostream>
 #include "ShaderBank.h"
+#include "utils/Constants.h"
 #include "Camera.h"
 #include "renderables/Line3D.h"
 #include "renderables/Sphere.h"
 #include "utils/Constants.h"
 
-Camera * camera = new Camera();
+// Camera camera;
+
+Camera Visualizer3D::camera;
 
 bool Visualizer3D::_rightClicked = false;
 bool Visualizer3D::_windowClosing = false;
@@ -61,11 +64,10 @@ Visualizer3D::Visualizer3D() : _hasClosed(false) {
                                              glm::vec3(0.0f, 0.0f, 1.0f)));
     // ==== END Cartesian-coordinates indicator ====
 
-    _renderer->RegisterRenderable(new Sphere(glm::vec3(1.0f, 0.0f, 0.0f), 0.5));
+    _renderer->RegisterRenderable(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), EARTH_RADIUS_M, 180, 360));
 }
 
 Visualizer3D::~Visualizer3D() {
-
 }
 
 void Visualizer3D::RegisterRenderable(IRenderable * renderable) {
@@ -78,8 +80,8 @@ void Visualizer3D::RegisterCameraProvider(ICameraProvider * cameraProvider) {
 
 void Visualizer3D::OpenWindow(float windowWidth, float windowHeight) {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -109,7 +111,6 @@ void Visualizer3D::OpenWindow(float windowWidth, float windowHeight) {
         return;
     }
 
-    // glViewport(0, 0, 2 * windowWidth, 2 * windowHeight);
     glfwSetFramebufferSizeCallback(_window, &Visualizer3D::framebuffer_size_callback);
     glfwSetCursorPosCallback(_window, &Visualizer3D::mousePositionCallback);
     glfwSetScrollCallback(_window, &Visualizer3D::mouseScrollCallback);
@@ -118,6 +119,21 @@ void Visualizer3D::OpenWindow(float windowWidth, float windowHeight) {
     glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     glEnable(GL_DEPTH_TEST);
+
+    GLint major, minor;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+    std::cout << "OpenGL version: " << major << "." << minor << std::endl;
+    
+
+    // glDepthRange(-1, 1);
+
+
+    // glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+
+    // glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+    // glDepthFunc(GL_GEQUAL);
 }
 
 void Visualizer3D::Iterate() {
@@ -158,18 +174,18 @@ void Visualizer3D::framebuffer_size_callback(GLFWwindow* window, int width, int 
 }
 
 void Visualizer3D::mousePositionCallback(GLFWwindow *window, double xpos, double ypos) {
-    camera->ProcessMouseMovement(xpos, ypos);
+    camera.ProcessMouseMovement(xpos, ypos);
 }
 
 void Visualizer3D::mouseScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    camera->ProcessMouseScroll(yoffset);
+    camera.ProcessMouseScroll(yoffset);
 }
 
 void Visualizer3D::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
     if(button == GLFW_MOUSE_BUTTON_RIGHT) {
         if(action == GLFW_PRESS && !Visualizer3D::_rightClicked) {
             Visualizer3D::_rightClicked = true;
-            camera->ToggleFreeCamera(window);
+            camera.ToggleFreeCamera(window);
         }
         if(action == GLFW_RELEASE) {
             Visualizer3D::_rightClicked = false;
@@ -178,10 +194,10 @@ void Visualizer3D::mouseButtonCallback(GLFWwindow *window, int button, int actio
 
     if(button == GLFW_MOUSE_BUTTON_LEFT) {
         if(action == GLFW_PRESS) {
-            camera->SetLeftButtonHolding(true);
+            camera.SetLeftButtonHolding(true);
         }
         if(action == GLFW_RELEASE) {
-            camera->SetLeftButtonHolding(false);
+            camera.SetLeftButtonHolding(false);
         }
     }
 }
@@ -197,19 +213,19 @@ void Visualizer3D::processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera->ProcessKeyboard(Camera_Movement::FORWARD, _deltaTime);
+        camera.ProcessKeyboard(Camera_Movement::FORWARD, _deltaTime);
         // _cameraPos += cameraSpeed * _cameraFront;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera->ProcessKeyboard(Camera_Movement::BACKWARD, _deltaTime);
+        camera.ProcessKeyboard(Camera_Movement::BACKWARD, _deltaTime);
         // _cameraPos -= cameraSpeed * _cameraFront;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera->ProcessKeyboard(Camera_Movement::LEFT, _deltaTime);
+        camera.ProcessKeyboard(Camera_Movement::LEFT, _deltaTime);
         // _cameraPos -= glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera->ProcessKeyboard(Camera_Movement::RIGHT, _deltaTime);
+        camera.ProcessKeyboard(Camera_Movement::RIGHT, _deltaTime);
         // _cameraPos += glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
     }
 }
@@ -222,5 +238,5 @@ void Visualizer3D::updateCameraPos() {
     if (_cameraProviders.size() == 0) return;
     
     Renderer::cameraPos
-        = camera->GetPosition(_cameraProviders[_currentCameraProviderId]->GetCameraPosition());
+        = camera.GetPosition(_cameraProviders[_currentCameraProviderId]->GetCameraPosition());
 }

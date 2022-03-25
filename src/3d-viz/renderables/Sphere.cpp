@@ -58,10 +58,10 @@ Sphere::Sphere(glm::dvec3 position, double radius, int stackCount, int sectorCou
         }
     }
 
-    _mesh = new Mesh(_vertices, _indeces, "earth");
+    _mesh = Mesh(_vertices, _indeces, "earth");
 }
 
-void Sphere::Render(Camera * camera) const {
+void Sphere::Render(Camera& camera) const {
     Shader * shader = ShaderBank::getInstance().GetShader(ShaderTypes::SIMPLE_OBJ_SHADER);
     
     glm::vec3 posToCamera = _position - Renderer::cameraPos;
@@ -76,12 +76,12 @@ void Sphere::Render(Camera * camera) const {
     shader->SetVec3("viewPos", Renderer::cameraPos.x, Renderer::cameraPos.y, Renderer::cameraPos.z);
 
     shader->SetMat4("model", model);
-    shader->SetMat4("view", camera->GetViewMatrix());
+    shader->SetMat4("view", camera.GetViewMatrix());
     shader->SetMat4("projection", Renderer::projection);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    _mesh->Draw();
+    _mesh.Draw();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

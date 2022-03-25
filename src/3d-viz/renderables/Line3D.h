@@ -11,7 +11,7 @@
 class Line3D : public IRenderable {
 public:
     Line3D(glm::dvec3 posFrom, glm::dvec3 posTo, glm::vec3 colorFrom, glm::vec3 colorTo);
-    void Render(Camera * camera) const;
+    void Render(Camera& camera) const override;
 private:
     float _data[12];
     glm::dvec3 _root;

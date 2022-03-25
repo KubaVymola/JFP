@@ -35,7 +35,7 @@ void Craft::Iterate() {
     }
 }
 
-void Craft::Render(Camera * camera) const {
+void Craft::Render(Camera& camera) const {
     _craftVisualizer.Render(camera, fdmData);
 }
 

@@ -9,7 +9,7 @@
 #include "../Visualizer3D.h"
 #include "utils/Constants.h"
 
-Model3D::Model3D(Mesh * mesh) {
+Model3D::Model3D(Mesh mesh) {
     _mesh = mesh;
 }
 
@@ -30,11 +30,11 @@ void Model3D::AddRotation(RotationStruct rotation) {
     this->_rotations.push_back(rotation);
 }
 
-void Model3D::Render(Camera * camera,
+void Model3D::Render(Camera &camera,
                      FDMData fdmData,
                      glm::mat4 craftTransform,
                      glm::mat4 parentModelTransform) const {
-    Shader * shader = ShaderBank::getInstance().GetShader(ShaderTypes::SIMPLE_OBJ_SHADER);
+    Shader *shader = ShaderBank::getInstance().GetShader(ShaderTypes::SIMPLE_OBJ_SHADER);
 
     glm::mat4 currentTransform = glm::mat4(1.0f);
     currentTransform *= parentModelTransform;
@@ -68,10 +68,10 @@ void Model3D::Render(Camera * camera,
     shader->SetVec3("viewPos", Renderer::cameraPos.x, Renderer::cameraPos.y, Renderer::cameraPos.z);
 
     shader->SetMat4("model", model);
-    shader->SetMat4("view", camera->GetViewMatrix());
+    shader->SetMat4("view", camera.GetViewMatrix());
     shader->SetMat4("projection", Renderer::projection);
 
-    _mesh->Draw();
+    _mesh.Draw();
 
     for (IRenderTree * child : _children) {
         child->Render(camera, fdmData, craftTransform, currentTransform);

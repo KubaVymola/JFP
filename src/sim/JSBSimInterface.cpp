@@ -230,10 +230,15 @@ void JSBSimInterface::UpdateData(FDMData& fdmData) {
     fdmData.SetValue("time_s", newTime);
     fdmData.SetValue("d_time_s", deltaTime);
 
-    fdmData.SetValue("latitude_deg", FDMExec->GetPropagate()->GetLocation().GetLatitudeDeg());
-    fdmData.SetValue("longitude_deg", FDMExec->GetPropagate()->GetLocation().GetLongitudeDeg());
+    // fdmData.SetValue("latitude_deg", FDMExec->GetPropagate()->GetLocation().GetLatitudeDeg());
+    // fdmData.SetValue("longitude_deg", FDMExec->GetPropagate()->GetLocation().GetLongitudeDeg());
     fdmData.SetValue("altitude_asl_ft", FDMExec->GetPropagate()->GetAltitudeASL());
-    
+
+    fdmData.SetValue("latitude_deg", 0.0f);
+    // fdmData.SetValue("latitude_deg", newTime * 0.0001f);
+    // fdmData.SetValue("longitude_deg", 0.0f);
+    fdmData.SetValue("longitude_deg", newTime * 1.0f);
+
 
     fdmData.SetValue("phi_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::ePhi)));
     fdmData.SetValue("theta_deg", (float)(RAD_TO_DEG * FDMExec->GetPropagate()->GetEuler(JSBSim::FGJSBBase::eTht)));
